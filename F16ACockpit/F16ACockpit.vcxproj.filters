@@ -1,0 +1,137 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{5a463b09-9ef6-4eeb-aeff-8c73e6a80f9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\Cockpit">
+      <UniqueIdentifier>{0837ac9e-fe02-4c06-8f21-c75a53c22954}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inputs">
+      <UniqueIdentifier>{e9845518-0204-493b-943e-a562d9088fb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Controls">
+      <UniqueIdentifier>{ccb4d809-b385-4c29-8b8d-40341703013a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Instruments">
+      <UniqueIdentifier>{b6c94bb3-278f-4f90-952b-b905e926f187}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Displays">
+      <UniqueIdentifier>{1492a145-f054-40b6-8d60-85dbbc2fefa4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Cockpit\ccParametersAPI.h">
+      <Filter>include\Cockpit</Filter>
+    </ClInclude>
+    <ClInclude Include="Inputs\F16Inputs.h">
+      <Filter>Inputs</Filter>
+    </ClInclude>
+    <ClInclude Include="ED_Cockpit_Defs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls\F16Pedals.h">
+      <Filter>Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls\F16Stick.h">
+      <Filter>Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Controls\F16Throttle.h">
+      <Filter>Controls</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\BaseInstrument.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16ADI.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16Clock.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16Altimeter.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16FuelFlowIndicator.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16Compass.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16HydraulicPressureIndicator.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Displays\BaseDisplay.h">
+      <Filter>Displays</Filter>
+    </ClInclude>
+    <ClInclude Include="Displays\F16HUD.h">
+      <Filter>Displays</Filter>
+    </ClInclude>
+    <ClInclude Include="Displays\F16MFD.h">
+      <Filter>Displays</Filter>
+    </ClInclude>
+    <ClInclude Include="Displays\F16Radar.h">
+      <Filter>Displays</Filter>
+    </ClInclude>
+    <ClInclude Include="Displays\F16StoresManagement.h">
+      <Filter>Displays</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16OxygenFlowIndicator.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16CockpitPressureIndicator.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16EPUFuelQuantity.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16LiquidOxygenQuantity.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16NozzlePosition.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16OilPressure.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16RpmIndicator.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16HSI.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="Instruments\F16ThreatIndicator.h">
+      <Filter>Instruments</Filter>
+    </ClInclude>
+    <ClInclude Include="F16ACockpit.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F16ACockpit.cpp" />
+  </ItemGroup>
+</Project>
