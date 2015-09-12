@@ -209,7 +209,7 @@ namespace F16
 			double rudderCommandFilteredWTrim = pedTrim - rudderCommandFiltered;
 
 			double alphaGained = aoa_filtered * (1.0/57.3);
-			double rollRateWithAlpha = roll_rate * alphaGained;
+			double rollRateWithAlpha = roll_rate;
 			double yawRateWithRoll = yaw_rate - rollRateWithAlpha;
 
 			double yawRateWithRollWashedOut = yawRateWashout.Filter(!(simInitialized),dt,yawRateWithRoll);
@@ -217,7 +217,7 @@ namespace F16
 
 			double yawRateFilteredWithSideAccel = yawRateWithRollFiltered;// + (ay * 19.3);
 
-			double aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
+			double aileronGained = 0;//limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
 
 			double finalRudderCommand = aileronGained + yawRateFilteredWithSideAccel + rudderCommandFilteredWTrim;
 
@@ -304,9 +304,9 @@ namespace F16
 		// Angle of attack limiter logic
 		double angle_of_attack_limiter(double alphaFiltered, double pitchRateCommand)
 		{
-			double topLimit = limit((alphaFiltered - 22.5) * 0.69, 0.0, 99999.0);
-			double bottomLimit = limit((alphaFiltered - 15.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
-
+			double topLimit = limit((alphaFiltered - 60.0) * 0.56, 0.0, 99999.0);
+			double bottomLimit = limit((alphaFiltered - 55.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
+			
 			return (topLimit + bottomLimit);
 		}
 
@@ -342,7 +342,7 @@ namespace F16
 
 			azFiltered = accelFilter.Filter(!(simInitialized),dt,az-1.0);
 
-			double alphaLimited = limit(angle_of_attack_ind,-5.0, 30.0);
+			double alphaLimited = limit(angle_of_attack_ind,-15.0, 30.0);
 			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered);
 			alphaFiltered += (alphaLimitedRate * dt);
 
@@ -361,7 +361,8 @@ namespace F16
 			double finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized),dt,finalCombinedCommandFilteredLimited);
 			finalPitchCommandTotal += (0.5 * alphaFiltered);
 
-			return finalPitchCommandTotal;
+			if (alphaFiltered < 20 && alphaFiltered > -25) return finalPitchCommandTotal;
+			else return stickCommandPos;
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);
