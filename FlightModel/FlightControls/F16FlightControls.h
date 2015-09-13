@@ -24,6 +24,7 @@ namespace F16
 	{
 	public:
 		bool		simInitialized;
+		int         Speedlevel; // LJQC: add speedlevel
 
 		double		leadingEdgeFlap_PCT;	// Leading edge flap as a percent of maximum (0 to 1)
 
@@ -209,7 +210,7 @@ namespace F16
 			double rudderCommandFilteredWTrim = pedTrim - rudderCommandFiltered;
 
 			double alphaGained = aoa_filtered * (1.0/57.3);
-			double rollRateWithAlpha = roll_rate;
+			double rollRateWithAlpha = roll_rate * alphaGained;
 			double yawRateWithRoll = yaw_rate - rollRateWithAlpha;
 
 			double yawRateWithRollWashedOut = yawRateWashout.Filter(!(simInitialized),dt,yawRateWithRoll);
@@ -217,7 +218,8 @@ namespace F16
 
 			double yawRateFilteredWithSideAccel = yawRateWithRollFiltered;// + (ay * 19.3);
 
-			double aileronGained = 0;//limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
+			double aileronGained = 0; //LJQC: make ARI only works at 0~20deg AOA.
+			if (aoa_filtered < 20 && aoa_filtered > 0) aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
 
 			double finalRudderCommand = aileronGained + yawRateFilteredWithSideAccel + rudderCommandFilteredWTrim;
 
@@ -228,6 +230,33 @@ namespace F16
 			//return yawServoCommand;
 		}
 
+		double fcs_flap_controller(double airspeed_FPS) //LJQC: FLAPS won't deploy when Landing Gears are UP.
+		{
+			double airspeed_KTS = 0.5924838012958964 * airspeed_FPS;
+			double trailing_edge_flap_deflection = 0.0;
+
+			if (airspeed_KTS < 260.0)
+			{
+				Speedlevel = 1;
+				//trailing_edge_flap_deflection = 1.0;
+			}
+			else if ((airspeed_KTS >= 260.0) && (airspeed_KTS <= 380.0))
+			{
+				Speedlevel = 2;
+				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0)/(370.0-240.0))) * 20.0;
+			}
+			else
+			{
+				Speedlevel = 3;
+				//trailing_edge_flap_deflection = 0.0;
+				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0) / (370.0 - 240.0))) * 20.0;
+			}
+
+			trailing_edge_flap_deflection = limit(trailing_edge_flap_deflection, 0.0, 20.0);
+
+			return trailing_edge_flap_deflection;
+			return Speedlevel;
+		}
 		// Stick force schedule for pitch control
 		double fcs_pitch_controller_force_command(double longStickInput, double pitchTrim, double dt)
 		{
@@ -267,9 +296,9 @@ namespace F16
 
 			double longStickCommandWithTrim_G = pitchTrim - longStickCommand_G;
 
-			double longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 8.0);
+			double longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
 
-			double longStickCommandWithTrimLimited_G_Rate = 4.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
+			double longStickCommandWithTrimLimited_G_Rate = 6.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
 			stickCommandPosFiltered += (longStickCommandWithTrimLimited_G_Rate * dt);
 
 			return stickCommandPosFiltered;
@@ -304,8 +333,8 @@ namespace F16
 		// Angle of attack limiter logic
 		double angle_of_attack_limiter(double alphaFiltered, double pitchRateCommand)
 		{
-			double topLimit = limit((alphaFiltered - 60.0) * 0.56, 0.0, 99999.0);
-			double bottomLimit = limit((alphaFiltered - 55.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
+			double topLimit = limit((alphaFiltered - 100.0) * 0.56, 0.0, 99999.0); //change 2, increase AOA limits
+			double bottomLimit = limit((alphaFiltered - 90.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
 			
 			return (topLimit + bottomLimit);
 		}
@@ -342,12 +371,12 @@ namespace F16
 
 			azFiltered = accelFilter.Filter(!(simInitialized),dt,az-1.0);
 
-			double alphaLimited = limit(angle_of_attack_ind,-15.0, 30.0);
+			double alphaLimited = limit(angle_of_attack_ind,-15.0, 90.0);
 			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered);
 			alphaFiltered += (alphaLimitedRate * dt);
 
 			double pitchRateWashedOut = pitchRateWashout.Filter(!(simInitialized),dt,pitch_rate);
-			double pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;		
+			double pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled;		
 
 			double limiterCommand = angle_of_attack_limiter(-alphaFiltered, pitchRateCommand);
 
@@ -361,8 +390,42 @@ namespace F16
 			double finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized),dt,finalCombinedCommandFilteredLimited);
 			finalPitchCommandTotal += (0.5 * alphaFiltered);
 
-			if (alphaFiltered < 20 && alphaFiltered > -25) return finalPitchCommandTotal;
-			else return stickCommandPos;
+			double longStickInputForce2;
+			if (longStickInput > 0.0)
+			{
+				longStickInputForce2 = longStickInput * 80.0;
+			}
+			else
+			{
+				longStickInputForce2 = longStickInput * 180.0;
+			}
+
+
+			//LJQC: MPO fuctions here:
+			if (Speedlevel == 1)
+			{
+				if (longStickInputForce2 <= 8 && alphaFiltered <= 20 && alphaFiltered > -90)
+				{
+					finalPitchCommandTotal = finalPitchCommandTotal + 0.3;
+					return finalPitchCommandTotal;
+				}
+				else return stickCommandPos;
+			} 
+			if (Speedlevel == 2)
+			{
+				if (longStickInputForce2 < -8 && alphaFiltered > 17)
+				{ 
+					return stickCommandPos;
+				}
+				else
+				{
+					return finalPitchCommandTotal;
+				}
+			}
+			if (Speedlevel == 3)
+			{
+				return finalPitchCommandTotal;
+			}
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);
