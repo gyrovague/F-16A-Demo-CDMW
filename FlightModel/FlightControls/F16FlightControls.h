@@ -192,7 +192,7 @@ namespace F16
 			double rudderForceCommand = pedInput * 450.0;
 
 			double rudderCommand = 0.0;
-			if(abs(rudderForceCommand) < 44.0)
+			/*if(abs(rudderForceCommand) < 44.0)
 			{
 				rudderCommand = 0.0;
 			}
@@ -203,7 +203,7 @@ namespace F16
 			else if(rudderForceCommand <= -44.0)
 			{
 				rudderCommand = -0.0739 * rudderForceCommand - 3.2512;
-			}
+			}*/
 
 			rudderCommand = limit(rudderCommand, -30.0, 30.0);
 			double rudderCommandFiltered = rudderCommandFilter.Filter(!(simInitialized),dt,rudderCommand);
@@ -235,12 +235,12 @@ namespace F16
 			double airspeed_KTS = 0.5924838012958964 * airspeed_FPS;
 			double trailing_edge_flap_deflection = 0.0;
 
-			if (airspeed_KTS < 260.0)
+			if (airspeed_KTS < 220.0)
 			{
 				Speedlevel = 1;
 				//trailing_edge_flap_deflection = 1.0;
 			}
-			else if ((airspeed_KTS >= 260.0) && (airspeed_KTS <= 380.0))
+			else if ((airspeed_KTS >= 220.0) && (airspeed_KTS <= 400.0))
 			{
 				Speedlevel = 2;
 				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0)/(370.0-240.0))) * 20.0;
@@ -333,8 +333,8 @@ namespace F16
 		// Angle of attack limiter logic
 		double angle_of_attack_limiter(double alphaFiltered, double pitchRateCommand)
 		{
-			double topLimit = limit((alphaFiltered - 100.0) * 0.56, 0.0, 99999.0); //change 2, increase AOA limits
-			double bottomLimit = limit((alphaFiltered - 90.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
+			double topLimit = limit((alphaFiltered - 179.4) * 0.56, 0.0, 99999.0); //change 2, increase AOA limits
+			double bottomLimit = limit((alphaFiltered - 170.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
 			
 			return (topLimit + bottomLimit);
 		}
@@ -371,7 +371,7 @@ namespace F16
 
 			azFiltered = accelFilter.Filter(!(simInitialized),dt,az-1.0);
 
-			double alphaLimited = limit(angle_of_attack_ind,-15.0, 90.0);
+			double alphaLimited = limit(angle_of_attack_ind,-15.0, 179.0);
 			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered);
 			alphaFiltered += (alphaLimitedRate * dt);
 
@@ -402,30 +402,33 @@ namespace F16
 
 
 			//LJQC: MPO fuctions here:
-			if (Speedlevel == 1)
+			if (Speedlevel == 1 && pedInput == 0)
 			{
-				if (longStickInputForce2 <= 8 && alphaFiltered <= 20 && alphaFiltered > -90)
+				if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
 				{
-					finalPitchCommandTotal = finalPitchCommandTotal + 0.3;
+
 					return finalPitchCommandTotal;
 				}
+				else if (longStickInputForce2 < -8 && alphaFiltered < 40) return finalPitchCommandTotal;
 				else return stickCommandPos;
 			} 
-			if (Speedlevel == 2)
+			else if (Speedlevel == 2 && pedInput == 0)
 			{
-				if (longStickInputForce2 < -8 && alphaFiltered > 17)
-				{ 
-					return stickCommandPos;
-				}
-				else
-				{
-					return finalPitchCommandTotal;
-				}
+				if (longStickInputForce2 < -8 && alphaFiltered > 40) return stickCommandPos;
+
+
+
+				else return finalPitchCommandTotal;
+
+
+
 			}
-			if (Speedlevel == 3)
+			else if (Speedlevel == 3 && pedInput == 0)
 			{
 				return finalPitchCommandTotal;
 			}
+			else if (Speedlevel == 2 && pedInput != 0 && longStickInputForce2 < -100) return stickCommandPos;
+			else return finalPitchCommandTotal;
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);
@@ -541,6 +544,7 @@ namespace F16
 			return rollActuatorCommand;
 		}		
 
+		/*
 		// Passive flap schedule for the F-16...nominal for now from flight manual comments
 		double fcs_flap_controller(double airspeed_FPS)
 		{
@@ -563,7 +567,7 @@ namespace F16
 			trailing_edge_flap_deflection = limit(trailing_edge_flap_deflection,0.0,20.0);
 
 			return trailing_edge_flap_deflection;
-		}
+		}*/
 
 	public:
 
