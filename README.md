@@ -1,5 +1,6 @@
-# F-16A Demo
+# F-16A Demo CDMW
 ========
+* A new branch by CDMW based on original F-16A Demo *
 
 A howto-module for DCS: World about high fidelity flight dynamics and advanced systems modeling. 
 Originally created by CptSmiley. 3D work done by SkateZilla.
