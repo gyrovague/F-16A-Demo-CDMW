@@ -279,10 +279,12 @@ namespace F16
 			}
 			else if((longStickInputForce < -8) && (longStickInputForce > -33.0))
 			{
+				//if (pedInput > 0.8 || pedInput < -0.8) longStickCommand_G = 0.2*longStickInputForce + 1.6;
 				longStickCommand_G = (0.016 * longStickInputForce) + 0.128;
 			}
 			else if(longStickInputForce <= -33.0)
 			{
+				//if (pedInput > 0.8 || pedInput < -0.8) longStickCommand_G = 0.2*longStickInputForce + 1.6;
 				longStickCommand_G = (0.067 * longStickInputForce) + 1.8112;
 			}
 			else if((longStickInputForce > 8.0) && (longStickInputForce < 33.0))
@@ -296,7 +298,10 @@ namespace F16
 
 			double longStickCommandWithTrim_G = pitchTrim - longStickCommand_G;
 
-			double longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
+			//LJQC: Pedal G-limit Override===============================================================================================
+			double longStickCommandWithTrimLimited_G;
+			if (pedInput > 0.8 || pedInput < -0.8) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
+			else longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
 
 			double longStickCommandWithTrimLimited_G_Rate = 6.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
 			stickCommandPosFiltered += (longStickCommandWithTrimLimited_G_Rate * dt);
@@ -381,34 +386,36 @@ namespace F16
 
 			//LJQC: Adjust Gains according to speed.=====================================================================================
 			double pitchRateCommand; 
-			if (Speedlevel == 1)
+			if (Speedlevel == 1 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled; 
 			}
-			else if (Speedlevel == 2)
+			else if (Speedlevel == 2 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.55 * dynamicPressureScheduled;
 			}
-			else if (Speedlevel == 3)
+			else if (Speedlevel == 3 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
 			}
+			else if (pedInput > 0.8 || pedInput < -0.8) pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
 
 			double limiterCommand = angle_of_attack_limiter(-alphaFiltered, pitchRateCommand);
 
 			double gLimiterCommand;
-			if (Speedlevel == 1)
+			if (Speedlevel == 1 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.2));	//0.2
 			}
-			else if (Speedlevel == 2)
+			else if (Speedlevel == 2 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.15));	//0.2
 			}
-			else if (Speedlevel == 3)
+			else if (Speedlevel == 3 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.1));	//0.2
 			}
+			else if (pedInput > 0.8 || pedInput < -0.8) gLimiterCommand = -azFiltered;
 			
 
 			double finalCombinedCommand = dynamicPressureScheduled * (2.5 * (stickCommandPos + limiterCommand + gLimiterCommand));
@@ -417,22 +424,26 @@ namespace F16
 			finalCombinedCommandFilteredLimited = finalCombinedCommandFilteredLimited + finalCombinedCommand;
 
 			double finalPitchCommandTotal;
-			if (Speedlevel == 1)
+			if (Speedlevel == 1 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.5 * alphaFiltered);
 			}
-			else if (Speedlevel == 2)
+			else if (Speedlevel == 2 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.6 * alphaFiltered);
 			}
-			else if (Speedlevel == 3)
+			else if (Speedlevel == 3 && pedInput <= 0.8 && pedInput >= -0.8)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.7 * alphaFiltered);
 			}
-			
+			else if (pedInput > 0.8 || pedInput < -0.8)
+			{
+				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
+				finalPitchCommandTotal += (0.7 * alphaFiltered);
+			}
 
 			double longStickInputForce2;
 			if (longStickInput > 0.0)
@@ -457,7 +468,7 @@ namespace F16
 			} 
 			else if (Speedlevel == 2)
 			{
-				if ((longStickInputForce2 < -8 && alphaFiltered > 40) || (pedInput > 0.8 && longStickInputForce2 < -100) || (pedInput < -0.8 && longStickInputForce2 < -100)) return stickCommandPos;
+				if (longStickInputForce2 < -8 && alphaFiltered > 40) return stickCommandPos;
 				else return finalPitchCommandTotal;
 			}
 			else if (Speedlevel == 3)
