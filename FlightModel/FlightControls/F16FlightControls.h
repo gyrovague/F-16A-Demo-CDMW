@@ -372,23 +372,67 @@ namespace F16
 			azFiltered = accelFilter.Filter(!(simInitialized),dt,az-1.0);
 
 			double alphaLimited = limit(angle_of_attack_ind,-15.0, 179.0);
-			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered);
+			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered); //10.0
 			alphaFiltered += (alphaLimitedRate * dt);
 
 			double pitchRateWashedOut = pitchRateWashout.Filter(!(simInitialized),dt,pitch_rate);
-			double pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled;		
+
+
+
+			//LJQC: Adjust Gains according to speed.=====================================================================================
+			double pitchRateCommand; 
+			if (Speedlevel == 1)
+			{
+				pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled; 
+			}
+			else if (Speedlevel == 2)
+			{
+				pitchRateCommand = pitchRateWashedOut * 0.55 * dynamicPressureScheduled;
+			}
+			else if (Speedlevel == 3)
+			{
+				pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
+			}
 
 			double limiterCommand = angle_of_attack_limiter(-alphaFiltered, pitchRateCommand);
 
-			double gLimiterCommand = -(azFiltered +  (pitchRateWashedOut * 0.2));	
+			double gLimiterCommand;
+			if (Speedlevel == 1)
+			{
+				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.2));	//0.2
+			}
+			else if (Speedlevel == 2)
+			{
+				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.15));	//0.2
+			}
+			else if (Speedlevel == 3)
+			{
+				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.1));	//0.2
+			}
+			
 
 			double finalCombinedCommand = dynamicPressureScheduled * (2.5 * (stickCommandPos + limiterCommand + gLimiterCommand));
 
 			double finalCombinedCommandFilteredLimited = limit(pitchIntegrator.Filter(!(simInitialized),dt,finalCombinedCommand),-25.0,25.0);
 			finalCombinedCommandFilteredLimited = finalCombinedCommandFilteredLimited + finalCombinedCommand;
 
-			double finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized),dt,finalCombinedCommandFilteredLimited);
-			finalPitchCommandTotal += (0.5 * alphaFiltered);
+			double finalPitchCommandTotal;
+			if (Speedlevel == 1)
+			{
+				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
+				finalPitchCommandTotal += (0.5 * alphaFiltered);
+			}
+			else if (Speedlevel == 2)
+			{
+				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
+				finalPitchCommandTotal += (0.6 * alphaFiltered);
+			}
+			else if (Speedlevel == 3)
+			{
+				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
+				finalPitchCommandTotal += (0.7 * alphaFiltered);
+			}
+			
 
 			double longStickInputForce2;
 			if (longStickInput > 0.0)
@@ -402,32 +446,24 @@ namespace F16
 
 
 			//LJQC: MPO fuctions here:
-			if (Speedlevel == 1 && pedInput == 0)
+			if (Speedlevel == 1)
 			{
 				if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
 				{
-
 					return finalPitchCommandTotal;
 				}
 				else if (longStickInputForce2 < -8 && alphaFiltered < 40) return finalPitchCommandTotal;
 				else return stickCommandPos;
 			} 
-			else if (Speedlevel == 2 && pedInput == 0)
+			else if (Speedlevel == 2)
 			{
-				if (longStickInputForce2 < -8 && alphaFiltered > 40) return stickCommandPos;
-
-
-
+				if ((longStickInputForce2 < -8 && alphaFiltered > 40) || (pedInput > 0.8 && longStickInputForce2 < -100) || (pedInput < -0.8 && longStickInputForce2 < -100)) return stickCommandPos;
 				else return finalPitchCommandTotal;
-
-
-
 			}
-			else if (Speedlevel == 3 && pedInput == 0)
+			else if (Speedlevel == 3)
 			{
 				return finalPitchCommandTotal;
 			}
-			else if (Speedlevel == 2 && pedInput != 0 && longStickInputForce2 < -100) return stickCommandPos;
 			else return finalPitchCommandTotal;
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
