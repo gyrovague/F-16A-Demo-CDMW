@@ -5,6 +5,7 @@ purposes 	   = {render_purpose.GENERAL,render_purpose.HUD_ONLY_VIEW}
 --subset ids
 BASE    = 1
 INDICATION = 2
+-- does not work
 
 page_subsets  = {
 [BASE]    		= LockOn_Options.script_path.."HUD/Indicator/base_page.lua",
