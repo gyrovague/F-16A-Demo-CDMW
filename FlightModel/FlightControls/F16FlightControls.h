@@ -27,7 +27,8 @@ namespace F16
 		int         Speedlevel; // LJQC: add speedlevel
 
 		double		leadingEdgeFlap_PCT;	// Leading edge flap as a percent of maximum (0 to 1)
-
+		double      blank = 0; //LJQC: add 0 value
+		double      overspeed = 10; //LJQC: Deal with overspeed: Auto Pull-up
 	//protected:
 		double		leading_edge_flap_integral;
 		double		leading_edge_flap_integrated;
@@ -223,7 +224,8 @@ namespace F16
 
 			double finalRudderCommand = aileronGained + yawRateFilteredWithSideAccel + rudderCommandFilteredWTrim;
 
-			return finalRudderCommand;
+			if (Speedlevel !=4) return finalRudderCommand;
+			else return blank;
 
 			//TODO: Figure out why there is a ton of flutter at high speed due to these servo dynamics
 			//double yawServoCommand = yawServoFilter.Filter(!(simInitialized),dt,finalRudderCommand);
@@ -245,17 +247,20 @@ namespace F16
 				Speedlevel = 2;
 				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0)/(370.0-240.0))) * 20.0;
 			}
-			else
+			else if ((airspeed_KTS > 400.0) && (airspeed_KTS <= 660.0))
 			{
 				Speedlevel = 3;
 				//trailing_edge_flap_deflection = 0.0;
 				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0) / (370.0 - 240.0))) * 20.0;
 			}
+			else
+			{
+				Speedlevel = 4;
+			}
 
 			trailing_edge_flap_deflection = limit(trailing_edge_flap_deflection, 0.0, 20.0);
 
 			return trailing_edge_flap_deflection;
-			return Speedlevel;
 		}
 		// Stick force schedule for pitch control
 		double fcs_pitch_controller_force_command(double longStickInput, double pitchTrim, double dt)
@@ -300,7 +305,7 @@ namespace F16
 
 			//LJQC: Pedal G-limit Override===============================================================================================
 			double longStickCommandWithTrimLimited_G;
-			if (pedInput > 0.8 || pedInput < -0.8) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
+			if (pedInput < -0.8) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
 			else longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
 
 			double longStickCommandWithTrimLimited_G_Rate = 6.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
@@ -398,7 +403,11 @@ namespace F16
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
 			}
-			else if (pedInput > 0.8 || pedInput < -0.8) pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
+			else if (Speedlevel == 4 && pedInput <= 0.8 && pedInput >= -0.8)
+			{
+				pitchRateCommand = pitchRateWashedOut * 0.1 * dynamicPressureScheduled;
+			}
+			else if (pedInput < -0.8) pitchRateCommand = pitchRateWashedOut * 0.8 * dynamicPressureScheduled;
 
 			double limiterCommand = angle_of_attack_limiter(-alphaFiltered, pitchRateCommand);
 
@@ -415,7 +424,11 @@ namespace F16
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.1));	//0.2
 			}
-			else if (pedInput > 0.8 || pedInput < -0.8) gLimiterCommand = -azFiltered;
+			else if (Speedlevel == 4 && pedInput <= 0.8 && pedInput >= -0.8)
+			{
+				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.7));	//0.2
+			}
+			else if (pedInput < -0.8) gLimiterCommand = -azFiltered;
 			
 
 			double finalCombinedCommand = dynamicPressureScheduled * (2.5 * (stickCommandPos + limiterCommand + gLimiterCommand));
@@ -439,7 +452,12 @@ namespace F16
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.7 * alphaFiltered);
 			}
-			else if (pedInput > 0.8 || pedInput < -0.8)
+			else if (Speedlevel == 4 && pedInput <= 0.8 && pedInput >= -0.8)
+			{
+				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
+				finalPitchCommandTotal += (0.1 * alphaFiltered);
+			}
+			else if (pedInput < -0.8)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.7 * alphaFiltered);
@@ -457,6 +475,9 @@ namespace F16
 
 
 			//LJQC: MPO fuctions here:
+			if (pedInput <= 0.8)
+			{
+			
 			if (Speedlevel == 1)
 			{
 				if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
@@ -475,7 +496,14 @@ namespace F16
 			{
 				return finalPitchCommandTotal;
 			}
+			else if (Speedlevel == 4)
+			{
+				return overspeed;
+			}
 			else return finalPitchCommandTotal;
+
+			}
+			else if (pedInput > 0.8) return overspeed;
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);
