@@ -4,6 +4,7 @@
 #include "../stdafx.h"
 #include <memory.h>
 #include "../UtilityFunctions.h"
+#include <Windows.h>
 //#include "../include/general_filter.h"
 
 #include "DummyFilter.h"
@@ -25,10 +26,11 @@ namespace F16
 	public:
 		bool		simInitialized;
 		int         Speedlevel; // LJQC: add speedlevel
+		int         autopilot = 0; // LJQC: add autopilot/pull-up when overspeed
 
 		double		leadingEdgeFlap_PCT;	// Leading edge flap as a percent of maximum (0 to 1)
 		double      blank = 0; //LJQC: add 0 value
-		double      overspeed = 10; //LJQC: Deal with overspeed: Auto Pull-up
+		double      overspeed = 10; //LJQC: Deal with overspeed
 	//protected:
 		double		leading_edge_flap_integral;
 		double		leading_edge_flap_integrated;
@@ -473,9 +475,15 @@ namespace F16
 				longStickInputForce2 = longStickInput * 180.0;
 			}
 
+			if (GetAsyncKeyState(0x53) & 1)
+			{
+				autopilot = autopilot + 1;
+				if (autopilot > 1) autopilot = 0;
+			}
+			
 
 			//LJQC: MPO fuctions here:
-			if (pedInput <= 0.8)
+			if (pedInput <= 0.8 && autopilot == 0)
 			{
 			
 			if (Speedlevel == 1)
@@ -498,12 +506,13 @@ namespace F16
 			}
 			else if (Speedlevel == 4)
 			{
-				return overspeed;
+				autopilot = 1;
 			}
 			else return finalPitchCommandTotal;
 
 			}
-			else if (pedInput > 0.8) return overspeed;
+			else if (pedInput > 0.8 || autopilot == 1) return overspeed;
+			else return overspeed;
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);

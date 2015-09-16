@@ -4,6 +4,7 @@
 #include "../stdafx.h"
 
 #include "F16LandingWheel.h"
+#include <Windows.h>
 
 namespace F16
 {
@@ -49,6 +50,8 @@ namespace F16
 		F16LandingWheel wheelRight;
 
 		bool parkingBreakOn;
+
+		int geardownn = 0;
 
 		F16LandingGear() 
 			: gearDownAngle(0)
@@ -99,23 +102,35 @@ namespace F16
 		// key press DOWN
 		void setWheelBrakesON()
 		{
+			if (GetAsyncKeyState(0x57) & 0x8000)
+			{
 			wheelLeft.brakeInput = 1;
 			wheelRight.brakeInput = 1;
+			}
 		}
 		// key press UP
 		void setWheelBrakesOFF()
 		{
+			if (GetAsyncKeyState(0x57) == 0)
+			{
 			wheelLeft.brakeInput = 0;
 			wheelRight.brakeInput = 0;
+			}
 		}
 
 		void setNosewheelSteeringON()
 		{
-			nosewheelSteering = true;
+			if (GetAsyncKeyState(0x4B) & 1)
+			{
+				nosewheelSteering = true;
+			}
 		}
 		void setNosewheelSteeringOFF()
 		{
-			nosewheelSteering = false;
+			if (GetAsyncKeyState(0x4C) & 1)
+			{
+				nosewheelSteering = false;
+			}
 		}
 
 		// TODO: joystick input is usually -100..100
@@ -124,18 +139,18 @@ namespace F16
 		// or just "cut" out excess input?
 		void nosewheelTurn(const double value)
 		{
-			/* skip for now until button mapping works for it
+			// skip for now until button mapping works for it
 			if (nosewheelSteering == false)
 			{
 				return;
 			}
-			*/
-			if (isWoW() == false)
+			
+			/*if (isWoW() == false)
 			{
 				return;
-			}
+			}*/
 			// TODO: check value
-			//noseGearTurnAngle = value;
+			noseGearTurnAngle = value;
 
 			// for now, just cut input to allowed range in degrees
 			noseGearTurnAngle = limit(value, -32, 32);
@@ -152,7 +167,7 @@ namespace F16
 
 			return Vec3(x, 0, z); // test!
 
-			//Vec3 direction(1, 0, 0); // <- start with aligned to body direction
+			Vec3 direction(1, 0, 0); // <- start with aligned to body direction
 			// ..vector multiply by radians?
 			// translation matrix?
 			//return direction;
@@ -197,12 +212,17 @@ namespace F16
 
 		void switchGearUpDown()
 		{
-			if (gearDownAngle > 0)
+			if (GetAsyncKeyState(0x47) & 1)
+			{
+				geardownn = geardownn + 1;
+				if (geardownn > 1) geardownn = 0;
+			}
+			if (geardownn == 0)
 			{
 				// down -> up
 				setGearUp();
 			}
-			else
+			else if (geardownn == 1)
 			{
 				// up -> down
 				setGearDown();
