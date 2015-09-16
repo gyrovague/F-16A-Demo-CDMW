@@ -196,8 +196,8 @@ namespace F16
 
 			double rudderForceCommand = pedInput * 450.0;
 
-			double rudderCommand = 0.0;
-			/*if(abs(rudderForceCommand) < 44.0)
+			double rudderCommand = 0.0; //LJQC: Restore rudder command
+			if(abs(rudderForceCommand) < 44.0)
 			{
 				rudderCommand = 0.0;
 			}
@@ -208,7 +208,7 @@ namespace F16
 			else if(rudderForceCommand <= -44.0)
 			{
 				rudderCommand = -0.0739 * rudderForceCommand - 3.2512;
-			}*/
+			}
 
 			rudderCommand = limit(rudderCommand, -30.0, 30.0);
 			double rudderCommandFiltered = rudderCommandFilter.Filter(!(simInitialized),dt,rudderCommand);
@@ -309,9 +309,9 @@ namespace F16
 
 			double longStickCommandWithTrim_G = pitchTrim - longStickCommand_G;
 
-			//LJQC: Pedal G-limit Override===============================================================================================
+			//LJQC: G-limit Override===============================================================================================
 			double longStickCommandWithTrimLimited_G;
-			if (pedInput < -0.8) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
+			if (GetAsyncKeyState(0x52) & 0x8000) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
 			else longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
 
 			double longStickCommandWithTrimLimited_G_Rate = 6.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
@@ -397,44 +397,44 @@ namespace F16
 
 			//LJQC: Adjust Gains according to speed.=====================================================================================
 			double pitchRateCommand; 
-			if (Speedlevel == 1 && pedInput <= 0.8 && pedInput >= -0.8)
+			if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled; 
 			}
-			else if (Speedlevel == 2 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.55 * dynamicPressureScheduled;
 			}
-			else if (Speedlevel == 3 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
 			}
-			else if (Speedlevel == 4 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				pitchRateCommand = pitchRateWashedOut * 0.1 * dynamicPressureScheduled;
 			}
-			else if (pedInput < -0.8) pitchRateCommand = pitchRateWashedOut * 0.8 * dynamicPressureScheduled;
+			else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000) pitchRateCommand = pitchRateWashedOut * 0.8 * dynamicPressureScheduled;
 
 			double limiterCommand = angle_of_attack_limiter(-alphaFiltered, pitchRateCommand);
 
 			double gLimiterCommand;
-			if (Speedlevel == 1 && pedInput <= 0.8 && pedInput >= -0.8)
+			if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.2));	//0.2
 			}
-			else if (Speedlevel == 2 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.15));	//0.2
 			}
-			else if (Speedlevel == 3 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.1));	//0.2
 			}
-			else if (Speedlevel == 4 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.7));	//0.2
 			}
-			else if (pedInput < -0.8) gLimiterCommand = -azFiltered;
+			else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000) gLimiterCommand = -azFiltered;
 			
 
 			double finalCombinedCommand = dynamicPressureScheduled * (2.5 * (stickCommandPos + limiterCommand + gLimiterCommand));
@@ -443,27 +443,27 @@ namespace F16
 			finalCombinedCommandFilteredLimited = finalCombinedCommandFilteredLimited + finalCombinedCommand;
 
 			double finalPitchCommandTotal;
-			if (Speedlevel == 1 && pedInput <= 0.8 && pedInput >= -0.8)
+			if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.5 * alphaFiltered);
 			}
-			else if (Speedlevel == 2 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.6 * alphaFiltered);
 			}
-			else if (Speedlevel == 3 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.7 * alphaFiltered);
 			}
-			else if (Speedlevel == 4 && pedInput <= 0.8 && pedInput >= -0.8)
+			else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.1 * alphaFiltered);
 			}
-			else if (pedInput < -0.8)
+			else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000)
 			{
 				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
 				finalPitchCommandTotal += (0.7 * alphaFiltered);
@@ -480,11 +480,8 @@ namespace F16
 			}
 
 			//LJQC: Key functions here:===================================================================================================
-			if (GetAsyncKeyState(0x44) & 1)
-			{
-				autopilot = autopilot + 1;
-				if (autopilot > 1) autopilot = 0;
-			}
+			if (GetAsyncKeyState(0x44) & 0x8000) autopilot = 1;
+			else if (GetAsyncKeyState(0x44) == 0) autopilot = 0;
 
 			if (GetAsyncKeyState(0x46) & 1) //ALT Flaps Switch: Press "F"
 			{
@@ -492,18 +489,15 @@ namespace F16
 				if (ALTflaps > 1) ALTflaps = 0;
 			}
 
-			if (GetAsyncKeyState(0x53) & 1) //Direct Control Mode: press "S"
-			{
-				directmode = directmode + 1;
-				if (directmode > 1) directmode = 0;
-			}
+			if (GetAsyncKeyState(0x53) & 0x8000) directmode = 1;
+			else if (GetAsyncKeyState(0x53) == 0) directmode = 0;
 			
 
 			//LJQC: MPO fuctions here:=====================================================================================================
 			if (directmode == 0)
 			{
 
-				if (pedInput <= 0.8 && autopilot == 0)
+				if (autopilot == 0)
 				{
 
 					if (Speedlevel == 1)
@@ -526,12 +520,13 @@ namespace F16
 					}
 					else if (Speedlevel == 4)
 					{
-						directmode = 1;
+						stickCommandPos = stickCommandPos + 5;
+						return stickCommandPos;
 					}
 					else return finalPitchCommandTotal;
 
 				}
-				else if (pedInput > 0.8 || autopilot == 1) return overspeed;
+				else if (autopilot == 1) return overspeed;
 				else return overspeed;
 			}
 			else 
