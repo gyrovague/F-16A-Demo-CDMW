@@ -27,6 +27,8 @@ namespace F16
 		bool		simInitialized;
 		int         Speedlevel; // LJQC: add speedlevel
 		int         autopilot = 0; // LJQC: add autopilot/pull-up when overspeed
+		int         ALTflaps = 0; // LJQC: ALT Flaps Switch to control the automatic flaps on F-16
+		int         directmode = 0; //LJQC: Direct control mode just like in Su-27
 
 		double		leadingEdgeFlap_PCT;	// Leading edge flap as a percent of maximum (0 to 1)
 		double      blank = 0; //LJQC: add 0 value
@@ -221,8 +223,8 @@ namespace F16
 
 			double yawRateFilteredWithSideAccel = yawRateWithRollFiltered;// + (ay * 19.3);
 
-			double aileronGained = 0; //LJQC: make ARI only works at 0~20deg AOA.
-			if (aoa_filtered < 20 && aoa_filtered > 0) aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
+			double aileronGained = 0; //LJQC: make ARI only works at 0~25deg AOA=================================================================
+			if (aoa_filtered < 25 && aoa_filtered > 0) aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
 
 			double finalRudderCommand = aileronGained + yawRateFilteredWithSideAccel + rudderCommandFilteredWTrim;
 
@@ -234,30 +236,32 @@ namespace F16
 			//return yawServoCommand;
 		}
 
-		double fcs_flap_controller(double airspeed_FPS) //LJQC: FLAPS won't deploy when Landing Gears are UP.
+		double fcs_flap_controller(double airspeed_FPS) //LJQC: FLAPS will deploy when ALT Flaps Switch is ON.=====================================
 		{
 			double airspeed_KTS = 0.5924838012958964 * airspeed_FPS;
 			double trailing_edge_flap_deflection = 0.0;
 
-			if (airspeed_KTS < 220.0)
+			if (airspeed_KTS < 240.0)
 			{
 				Speedlevel = 1;
-				//trailing_edge_flap_deflection = 1.0;
+				if (ALTflaps == 1) trailing_edge_flap_deflection = 20.0;
+				else trailing_edge_flap_deflection = 0;
 			}
-			else if ((airspeed_KTS >= 220.0) && (airspeed_KTS <= 400.0))
+			else if ((airspeed_KTS >= 240.0) && (airspeed_KTS <= 370.0))
 			{
 				Speedlevel = 2;
-				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0)/(370.0-240.0))) * 20.0;
+				if (ALTflaps == 1) trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0) / (370.0 - 240.0))) * 20.0;
+				else trailing_edge_flap_deflection = 0;
 			}
-			else if ((airspeed_KTS > 400.0) && (airspeed_KTS <= 660.0))
+			else if ((airspeed_KTS > 370.0) && (airspeed_KTS <= 650.0))
 			{
 				Speedlevel = 3;
-				//trailing_edge_flap_deflection = 0.0;
-				//trailing_edge_flap_deflection = (1.0 - ((airspeed_KTS - 240.0) / (370.0 - 240.0))) * 20.0;
+				trailing_edge_flap_deflection = 0.0;
 			}
 			else
 			{
 				Speedlevel = 4;
+				trailing_edge_flap_deflection = 0.0;
 			}
 
 			trailing_edge_flap_deflection = limit(trailing_edge_flap_deflection, 0.0, 20.0);
@@ -475,44 +479,66 @@ namespace F16
 				longStickInputForce2 = longStickInput * 180.0;
 			}
 
-			if (GetAsyncKeyState(0x53) & 1)
+			//LJQC: Key functions here:===================================================================================================
+			if (GetAsyncKeyState(0x44) & 1)
 			{
 				autopilot = autopilot + 1;
 				if (autopilot > 1) autopilot = 0;
 			}
+
+			if (GetAsyncKeyState(0x46) & 1) //ALT Flaps Switch: Press "F"
+			{
+				ALTflaps = ALTflaps + 1;
+				if (ALTflaps > 1) ALTflaps = 0;
+			}
+
+			if (GetAsyncKeyState(0x53) & 1) //Direct Control Mode: press "S"
+			{
+				directmode = directmode + 1;
+				if (directmode > 1) directmode = 0;
+			}
 			
 
-			//LJQC: MPO fuctions here:
-			if (pedInput <= 0.8 && autopilot == 0)
+			//LJQC: MPO fuctions here:=====================================================================================================
+			if (directmode == 0)
 			{
-			
-			if (Speedlevel == 1)
-			{
-				if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
+
+				if (pedInput <= 0.8 && autopilot == 0)
 				{
-					return finalPitchCommandTotal;
-				}
-				else if (longStickInputForce2 < -8 && alphaFiltered < 40) return finalPitchCommandTotal;
-				else return stickCommandPos;
-			} 
-			else if (Speedlevel == 2)
-			{
-				if (longStickInputForce2 < -8 && alphaFiltered > 40) return stickCommandPos;
-				else return finalPitchCommandTotal;
-			}
-			else if (Speedlevel == 3)
-			{
-				return finalPitchCommandTotal;
-			}
-			else if (Speedlevel == 4)
-			{
-				autopilot = 1;
-			}
-			else return finalPitchCommandTotal;
 
+					if (Speedlevel == 1)
+					{
+						if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
+						{
+							return finalPitchCommandTotal;
+						}
+						else if (longStickInputForce2 < -8 && alphaFiltered < 40) return finalPitchCommandTotal;
+						else return stickCommandPos;
+					}
+					else if (Speedlevel == 2)
+					{
+						if (longStickInputForce2 < -8 && alphaFiltered > 40) return stickCommandPos;
+						else return finalPitchCommandTotal;
+					}
+					else if (Speedlevel == 3)
+					{
+						return finalPitchCommandTotal;
+					}
+					else if (Speedlevel == 4)
+					{
+						directmode = 1;
+					}
+					else return finalPitchCommandTotal;
+
+				}
+				else if (pedInput > 0.8 || autopilot == 1) return overspeed;
+				else return overspeed;
 			}
-			else if (pedInput > 0.8 || autopilot == 1) return overspeed;
-			else return overspeed;
+			else 
+			{ 
+				stickCommandPos = stickCommandPos + 5;
+				return stickCommandPos; 
+			}
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);
