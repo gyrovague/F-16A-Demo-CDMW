@@ -520,7 +520,7 @@ namespace F16
 					}
 					else if (Speedlevel == 4)
 					{
-						stickCommandPos = stickCommandPos + 5;
+						stickCommandPos = stickCommandPos*0.34 + 4.64;
 						return stickCommandPos;
 					}
 					else return finalPitchCommandTotal;
