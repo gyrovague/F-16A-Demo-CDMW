@@ -19,3 +19,14 @@
 #include <malloc.h>
 #include <memory.h>
 
+
+#include <iostream>
+#include<iomanip>
+#include <sstream>
+#include <fstream>
+#include <time.h>
+#include <psapi.h>
+#include <TlHelp32.h>
+#include <fcntl.h>
+#include <io.h>
+
