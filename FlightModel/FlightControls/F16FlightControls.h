@@ -30,12 +30,11 @@ void  CreateDebugConsole(LPCWSTR lPConsoleTitle)
 }
 
 int a; //LJQC: output KTAS on console
-int b; //LJQC: output AOA on console
-int rollrate;//LJQC: output roll rate on console
-int pitchrate;//LJQC: output pitch rate on console
-int pitchinput;//LJQC: output pitch input on console
-int rollinput;//LJQC: output pitch input on console
+double b; //LJQC: output AOA on console
+int stickcommand;//LJQC: display pitch input on console
+int rollinput;//LJQC: display roll input on console
 double gload;//LJQC: output load factor on console
+bool TVC = FALSE;//LJQC: output TVC on/off on console
 
 
 DWORD WINAPI InputThread(LPVOID lpParam)
@@ -48,12 +47,22 @@ DWORD WINAPI InputThread(LPVOID lpParam)
 	{
 		system("cls");
 		std::cout << a << " KTAS" << std::endl;
-		std::cout << b << " AOA" << std::endl;
+		std::cout << setiosflags(ios::fixed) << setprecision(0) << b << " AOA" << std::endl;
 		std::cout << setiosflags(ios::fixed) << setprecision(2) << gload << " G" << std::endl;
-		std::cout << pitchinput << " Pitch Stick" << std::endl;
+
+		std::cout << "" << std::endl;
+
+		std::cout << stickcommand << " Pitch Stick" << std::endl;
+
+		std::cout << "" << std::endl;
+
 		std::cout << rollinput << " Roll Stick" << std::endl;
-		std::cout << pitchrate << " Pitch Rate" << std::endl;
-		std::cout << rollrate << " Roll Rate" << std::endl;
+
+		std::cout << "" << std::endl;
+
+		if (TVC == FALSE) std::cout <<"OFF - TVC" << std::endl;
+		else std::cout << "ON - TVC" << std::endl;
+		
 		Sleep(10);
 
 	}
@@ -250,6 +259,7 @@ namespace F16
 		// Controller for yaw
 		double fcs_yaw_controller(double pedInput, double pedTrim, double yaw_rate, double roll_rate, double aoa_filtered, double aileron_commanded, double ay, double dt)
 		{
+			//yawrate = yaw_rate;
 			if (!(simInitialized))
 			{
 				double numerators[2] = { 0.0, 4.0 };
@@ -298,12 +308,14 @@ namespace F16
 
 			double yawRateFilteredWithSideAccel = yawRateWithRollFiltered;// + (ay * 19.3);
 
-			double aileronGained = 0; //LJQC: make ARI only works at 0~25deg AOA=================================================================
-			if (aoa_filtered < 25 && aoa_filtered > 0) aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
+			double aileronGained = 0; //LJQC: make ARI only works at 0~30deg AOA=================================================================
+			if (aoa_filtered < 30 && aoa_filtered > 0) aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
 
 			b = aoa_filtered;
 
 			double finalRudderCommand = aileronGained + yawRateFilteredWithSideAccel + rudderCommandFilteredWTrim;
+
+			//yawoutput = finalRudderCommand;
 
 			if (Speedlevel != 4) return finalRudderCommand;
 			else return blank;
@@ -350,18 +362,34 @@ namespace F16
 		double fcs_pitch_controller_force_command(double longStickInput, double pitchTrim, double dt)
 		{
 			double longStickInputForce = 0.0;
-			if (longStickInput > 0.0)
+
+			if (TVC == TRUE)
 			{
-				longStickInputForce = longStickInput * 80.0;
+				if (longStickInput > 0.0)
+				{
+					longStickInputForce = longStickInput * 80.0;
+				}
+				else
+				{
+					longStickInputForce = longStickInput * 180.0;
+				}
 			}
-			else
+			else if (TVC == FALSE)
 			{
-				longStickInputForce = longStickInput * 180.0;
+					longStickInputForce = longStickInput * 180.0;
+			}
+			stickcommand = longStickInputForce;
+
+			//LJQC: AOA Limiter Fake/Hack when TVC is OFF==============================
+			if (TVC == FALSE)
+			{
+				if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + ( b * 2.0 - 36.0 ) * (70.0/20.8);
+				else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0/9.2);
+				else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (80.0 / 20.0);
 			}
 			longStickInputForce = limit(longStickInputForce, -180.0, 80.0);
 			longStickForce = longStickInputForce;
-
-			pitchinput = longStickInputForce;
+			
 
 			double longStickCommand_G = 0.0;
 			if (abs(longStickInputForce) <= 8.0)
@@ -370,12 +398,10 @@ namespace F16
 			}
 			else if ((longStickInputForce < -8) && (longStickInputForce > -33.0))
 			{
-				//if (pedInput > 0.8 || pedInput < -0.8) longStickCommand_G = 0.2*longStickInputForce + 1.6;
 				longStickCommand_G = (0.016 * longStickInputForce) + 0.128;
 			}
 			else if (longStickInputForce <= -33.0)
 			{
-				//if (pedInput > 0.8 || pedInput < -0.8) longStickCommand_G = 0.2*longStickInputForce + 1.6;
 				longStickCommand_G = (0.067 * longStickInputForce) + 1.8112;
 			}
 			else if ((longStickInputForce > 8.0) && (longStickInputForce < 33.0))
@@ -386,15 +412,18 @@ namespace F16
 			{
 				longStickCommand_G = 0.0681*longStickInputForce - 1.4468;
 			}
-
 			double longStickCommandWithTrim_G = pitchTrim - longStickCommand_G;
 
 			//LJQC: G-limit Override===============================================================================================
 			double longStickCommandWithTrimLimited_G;
 			if (GetAsyncKeyState(0x52) & 0x8000) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
 			else longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
-
-			double longStickCommandWithTrimLimited_G_Rate = 6.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
+			double longStickCommandWithTrimLimited_G_Rate;
+			if (TVC == TRUE)
+			{
+				longStickCommandWithTrimLimited_G_Rate = 6.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered);
+			}
+			else longStickCommandWithTrimLimited_G_Rate = 4.0 * (longStickCommandWithTrimLimited_G - stickCommandPosFiltered); //original value
 			stickCommandPosFiltered += (longStickCommandWithTrimLimited_G_Rate * dt);
 
 			return stickCommandPosFiltered;
@@ -413,12 +442,10 @@ namespace F16
 			else if ((dynamicPressure_kNM2 >= 9.576) && (dynamicPressure_kNM2 <= 43.0))
 			{
 				scheduleOutput = (-0.018 * dynamicPressure_kNM2) + 1.1719;
-				//scheduleOutput =  (-0.0239 * dynamicPressure_kNM2) + 1.2292;
 			}
 			else if (dynamicPressure_kNM2 > 43.0)
 			{
 				scheduleOutput = -0.003 * dynamicPressure_kNM2 + 0.5277;
-				//scheduleOutput = -0.001 * dynamicPressure_kNM2 + 0.2422;
 			}
 
 			scheduleOutput = limit(scheduleOutput, 0.05, 1.0);
@@ -429,8 +456,18 @@ namespace F16
 		// Angle of attack limiter logic
 		double angle_of_attack_limiter(double alphaFiltered, double pitchRateCommand)
 		{
-			double topLimit = limit((alphaFiltered - 179.4) * 0.56, 0.0, 99999.0); //LJQC: increase AOA limits
-			double bottomLimit = limit((alphaFiltered - 170.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
+			double topLimit;
+			double bottomLimit;
+			if (TVC == TRUE)
+			{
+				topLimit = limit((alphaFiltered - 179.4) * 0.56, 0.0, 99999.0); //LJQC: increase AOA limits
+				bottomLimit = limit((alphaFiltered - 170.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
+			}
+			else
+			{
+				topLimit = limit((alphaFiltered - 20.4) * 0.69, 0.0, 99999.0); //LJQC: Standard F-16 limits
+				bottomLimit = limit((alphaFiltered - 15.0 + pitchRateCommand) * 0.322, 0.0, 99999.0);
+			}
 			return (topLimit + bottomLimit);
 		}
 
@@ -438,7 +475,7 @@ namespace F16
 		double fcs_pitch_controller(double longStickInput, double pitchTrim, double angle_of_attack_ind, double pitch_rate, double az, double differentialCommand, double dynPressure_LBFT2, double dt)
 		{
 			gload = az + 1;
-			pitchrate = pitch_rate;
+			//pitchrate = pitch_rate;
 			if (!(simInitialized))
 			{
 				double numerators[2] = { 1.0, 0.0 };
@@ -468,8 +505,11 @@ namespace F16
 
 			azFiltered = accelFilter.Filter(!(simInitialized), dt, az - 1.0);
 
-			double alphaLimited = limit(angle_of_attack_ind, -15.0, 179.0);
+			double alphaLimited = limit(angle_of_attack_ind, -95.0, 179.0);
+			
 			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered); //10.0
+
+
 			alphaFiltered += (alphaLimitedRate * dt);
 
 			double pitchRateWashedOut = pitchRateWashout.Filter(!(simInitialized), dt, pitch_rate);
@@ -478,44 +518,52 @@ namespace F16
 
 			//LJQC: Adjust Gains according to speed.=====================================================================================
 			double pitchRateCommand;
-			if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+			if (TVC == TRUE)
 			{
-				pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled;
+				if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					pitchRateCommand = pitchRateWashedOut * 0.4 * dynamicPressureScheduled;
+				}
+				else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					pitchRateCommand = pitchRateWashedOut * 0.55 * dynamicPressureScheduled;
+				}
+				else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
+				}
+				else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					pitchRateCommand = pitchRateWashedOut * 0.1 * dynamicPressureScheduled;
+				}
+				else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000) pitchRateCommand = pitchRateWashedOut * 0.8 * dynamicPressureScheduled;
 			}
-			else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				pitchRateCommand = pitchRateWashedOut * 0.55 * dynamicPressureScheduled;
-			}
-			else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled;
-			}
-			else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				pitchRateCommand = pitchRateWashedOut * 0.1 * dynamicPressureScheduled;
-			}
-			else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000) pitchRateCommand = pitchRateWashedOut * 0.8 * dynamicPressureScheduled;
+			else pitchRateCommand = pitchRateWashedOut * 0.7 * dynamicPressureScheduled; //LJQC: Standard F-16 gain
 
 			double limiterCommand = angle_of_attack_limiter(-alphaFiltered, pitchRateCommand);
 
 			double gLimiterCommand;
-			if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+			if (TVC == TRUE)
 			{
-				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.2));	//0.2
+				if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.2));	//0.2
+				}
+				else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.15));	//0.2
+				}
+				else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.1));	//0.2
+				}
+				else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.7));	//0.2
+				}
+				else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000) gLimiterCommand = -azFiltered;
 			}
-			else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.15));	//0.2
-			}
-			else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.1));	//0.2
-			}
-			else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.7));	//0.2
-			}
-			else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000) gLimiterCommand = -azFiltered;
+			else gLimiterCommand = -(azFiltered + (pitchRateWashedOut * 0.2));	//LJQC: Standard F-16 gain
 
 
 			double finalCombinedCommand = dynamicPressureScheduled * (2.5 * (stickCommandPos + limiterCommand + gLimiterCommand));
@@ -523,32 +571,31 @@ namespace F16
 			double finalCombinedCommandFilteredLimited = limit(pitchIntegrator.Filter(!(simInitialized), dt, finalCombinedCommand), -25.0, 25.0);
 			finalCombinedCommandFilteredLimited = finalCombinedCommandFilteredLimited + finalCombinedCommand;
 
-			double finalPitchCommandTotal;
-			if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+			double finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
+			if (TVC == TRUE)
 			{
-				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
-				finalPitchCommandTotal += (0.5 * alphaFiltered);
+				if (Speedlevel == 1 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					finalPitchCommandTotal += (0.5 * alphaFiltered);
+				}
+				else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					finalPitchCommandTotal += (0.6 * alphaFiltered);
+				}
+				else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					finalPitchCommandTotal += (0.7 * alphaFiltered);
+				}
+				else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
+				{
+					finalPitchCommandTotal += (0.1 * alphaFiltered);
+				}
+				else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000)
+				{
+					finalPitchCommandTotal += (0.7 * alphaFiltered);
+				}
 			}
-			else if (Speedlevel == 2 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
-				finalPitchCommandTotal += (0.6 * alphaFiltered);
-			}
-			else if (Speedlevel == 3 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
-				finalPitchCommandTotal += (0.7 * alphaFiltered);
-			}
-			else if (Speedlevel == 4 && GetAsyncKeyState(0x52) == 0 && GetAsyncKeyState(0x53) == 0)
-			{
-				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
-				finalPitchCommandTotal += (0.1 * alphaFiltered);
-			}
-			else if (GetAsyncKeyState(0x52) & 0x8000 || GetAsyncKeyState(0x53) & 0x8000)
-			{
-				finalPitchCommandTotal = pitchPreActuatorFilter.Filter(!(simInitialized), dt, finalCombinedCommandFilteredLimited);
-				finalPitchCommandTotal += (0.7 * alphaFiltered);
-			}
+			else finalPitchCommandTotal += (0.5 * alphaFiltered);//original value
 
 			double longStickInputForce2;
 			if (longStickInput > 0.0)
@@ -573,47 +620,70 @@ namespace F16
 			if (GetAsyncKeyState(0x53) & 0x8000) directmode = 1;
 			else if (GetAsyncKeyState(0x53) == 0) directmode = 0;
 
+			if (GetAsyncKeyState(0x54) & 1) TVC =! TVC;
+
+			//pitchinput = finalPitchCommandTotal;
+
 
 			//LJQC: MPO fuctions here:=====================================================================================================
-			if (directmode == 0)
+			if (TVC == TRUE)
 			{
-
-				if (autopilot == 0)
+				if (directmode == 0)
 				{
 
-					if (Speedlevel == 1)
+					if (autopilot == 0)
 					{
-						if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
+
+						if (a < 230)
+						{
+							if (longStickInputForce2 >= -8 && longStickInputForce2 <= 8 && alphaFiltered <= 10 && alphaFiltered > -179)
+							{
+								return finalPitchCommandTotal;
+							}
+							else if (longStickInputForce2 < -8 && alphaFiltered <= 10) return finalPitchCommandTotal;
+							else return stickCommandPos;
+						}
+						else if (a >= 230 && a <= 370)
+						{
+							if (longStickInputForce2 < -8 && alphaFiltered > 90)
+							{
+								return stickCommandPos;
+							}
+							else return finalPitchCommandTotal;
+						}
+						else if (Speedlevel == 3)
 						{
 							return finalPitchCommandTotal;
 						}
-						else if (longStickInputForce2 < -8 && alphaFiltered < 40) return finalPitchCommandTotal;
-						else return stickCommandPos;
-					}
-					else if (Speedlevel == 2)
-					{
-						if (longStickInputForce2 < -8 && alphaFiltered > 40) return stickCommandPos;
+						else if (Speedlevel == 4)
+						{
+							stickCommandPos = stickCommandPos*0.34 + 4.64;//LJQC: Eliminate the flutter at high speeds.(Fake/Hack)
+							return stickCommandPos;
+						}
 						else return finalPitchCommandTotal;
-					}
-					else if (Speedlevel == 3)
-					{
-						return finalPitchCommandTotal;
-					}
-					else if (Speedlevel == 4)
-					{
-						stickCommandPos = stickCommandPos*0.34 + 4.64;
-						return stickCommandPos;
-					}
-					else return finalPitchCommandTotal;
 
+					}
+					else if (autopilot == 1) return overspeed;
+					else return overspeed;
 				}
-				else if (autopilot == 1) return overspeed;
-				else return overspeed;
+				else
+				{
+					stickCommandPos = stickCommandPos + 5;
+					return stickCommandPos;
+				}
 			}
-			else
+			else if (TVC == FALSE)
 			{
-				stickCommandPos = stickCommandPos + 5;
-				return stickCommandPos;
+				if (Speedlevel != 4)
+				{
+					return finalPitchCommandTotal;
+				}
+				else if (Speedlevel == 4)
+				{
+					stickCommandPos = stickCommandPos*0.34 + 4.64; //LJQC: Eliminate the flutter at high speeds.(Fake/Hack)
+					return stickCommandPos;
+				}
+				else return finalPitchCommandTotal;
 			}
 
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
@@ -624,7 +694,7 @@ namespace F16
 		// Controller for roll
 		double fcs_roll_controller(double latStickInput, double longStickForce, double ay, double roll_rate, double roll_rate_trim, double dynPressure_LBFT2, double dt)
 		{
-			rollrate = roll_rate;
+			//rollrate = roll_rate;
 			if (!(simInitialized))
 			{
 				double numerators[2] = { 0.0, 60.0 };
@@ -649,9 +719,11 @@ namespace F16
 			}
 
 			double latStickForceCmd = latStickInput * 75.0;
+			rollinput = latStickForceCmd;
+
 			double latStickForce = latStickForceFilter.Filter(!(simInitialized), dt, latStickForceCmd);
 
-			rollinput = latStickForceCmd;
+			
 
 			double latStickForceBiased = latStickForce - (ay * 8.9);  // CJS: remove side acceleration bias?
 
@@ -730,6 +802,7 @@ namespace F16
 
 			// Mechanical servo dynamics
 			double rollActuatorCommand = rollActuatorDynamicsFilter.Filter(!(simInitialized), dt, rollCommandGained);
+
 			return rollActuatorCommand;
 		}
 
