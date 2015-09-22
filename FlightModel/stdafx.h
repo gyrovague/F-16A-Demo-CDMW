@@ -30,3 +30,8 @@
 #include <fcntl.h>
 #include <io.h>
 
+
+#include <mmsystem.h>
+#include <d3d9.h>
+#include <d3dx9.h>
+#include <string>

@@ -10,6 +10,8 @@
 #include "DummyFilter.h"
 
 
+
+
 void  CreateDebugConsole(LPCWSTR lPConsoleTitle)
 {
 
@@ -386,8 +388,10 @@ namespace F16
 				if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + ( b * 2.0 - 36.0 ) * (70.0/20.8);
 				else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0/9.2);
 				else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (80.0 / 20.0);
+
+				longStickInputForce = limit(longStickInputForce, -180.0, 180.0);
 			}
-			longStickInputForce = limit(longStickInputForce, -180.0, 80.0);
+			else if (TVC == TRUE) longStickInputForce = limit(longStickInputForce, -180.0, 80.0);
 			longStickForce = longStickInputForce;
 			
 
@@ -680,7 +684,7 @@ namespace F16
 				}
 				else if (Speedlevel == 4)
 				{
-					stickCommandPos = stickCommandPos*0.34 + 4.64; //LJQC: Eliminate the flutter at high speeds.(Fake/Hack)
+					stickCommandPos = stickCommandPos*0.34 + 4.54; //LJQC: Eliminate the flutter at high speeds.(Fake/Hack)
 					return stickCommandPos;
 				}
 				else return finalPitchCommandTotal;
