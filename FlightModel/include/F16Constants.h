@@ -21,6 +21,7 @@ namespace F16
 	const double		inertia_Iy_KGM2			= 75673.6;		// Reference moment of inertia (kg/m^2)
 	const double		inertia_Iz_KGM2			= 85552.1;		// Reference moment of inertia (kg/m^2)
 	const double		meterToFoot				= 3.28084;		// Meter to foot conversion factor
+
 }
 
 #endif // ifndef _F16CONSTANTS_H_

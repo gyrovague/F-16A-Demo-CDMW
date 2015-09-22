@@ -448,10 +448,10 @@ enum ed_fm_param_enum
 	ED_FM_FC3_AUTOPILOT_STATUS,
 	ED_FM_FC3_AUTOPILOT_FAILURE_ATTITUDE_STABILIZATION,
 
-	ED_FM_FC3_STICK_PITCH_LIMITER,	//ограничение РУС на себя (-1 .. 0 .. 1, 1 - не ограничивает)
-	ED_FM_FC3_STICK_ROLL_L_LIMITER,	//ограничение РУС по крену (0 .. 1, 1 - не ограничивает)
-	ED_FM_FC3_PEDAL_L_LIMITER,		//ограничение левой педали (0 .. 1, 1 - не ограничивает)
-	ED_FM_FC3_PEDAL_R_LIMITER,		//ограничение правой педали (0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_STICK_PITCH_LIMITER,	//ограничени?РУ?на се? (-1 .. 0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_STICK_ROLL_L_LIMITER,	//ограничени?РУ?по крен?(0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_PEDAL_L_LIMITER,		//ограничени?лево?педали (0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_PEDAL_R_LIMITER,		//ограничени?правой педали (0 .. 1, 1 - не ограничивает)
 
 	ED_FM_FC3_RESERVED_SPACE_END = 11000,
 };

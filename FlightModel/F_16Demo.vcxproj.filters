@@ -109,6 +109,7 @@
     <ClInclude Include="Engine\F16Gearbox.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
@@ -153,5 +154,8 @@
     <Filter Include="EnvironmentalSystem">
       <UniqueIdentifier>{29163abe-4f69-45d3-b184-3de938c9e430}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="F16DemoFM.rc" />
   </ItemGroup>
 </Project>

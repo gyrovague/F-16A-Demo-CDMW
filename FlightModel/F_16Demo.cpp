@@ -141,6 +141,7 @@ namespace F16
 	double		accz					= 0.0;			// Az (per normal direction convention) out the bottom of the a/c (m/s^2)
 	double		accy					= 0.0;			// Ay (per normal direction convention) out the right wing (m/s^2)
 
+
 	F16Atmosphere Atmos;
 	F16Aero Aero;
 	F16JFS Apu;
@@ -1322,3 +1323,4 @@ bool locateCockpitDll()
 	// all successful
 	return true;
 }
+

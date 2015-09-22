@@ -5,72 +5,267 @@
 #include <memory.h>
 #include "../UtilityFunctions.h"
 #include <Windows.h>
+#include<iomanip>
+
 //#include "../include/general_filter.h"
 
 #include "DummyFilter.h"
 
+int         a = 0.0; //LJQC: output KTAS on console
+int         AOA = 0;
+double      b = 0.0; //LJQC: output AOA on console
+int         stickcommand = 0;//LJQC: display pitch input on console
+int         rollinput = 0;//LJQC: display roll input on console
+double      gload = 0.0;//LJQC: output load factor on console
+int         Gs = 0;
+int         Speedlevel; // LJQC: add speedlevel
+int         autopilot = 0; // LJQC: add autopilot/pull-up when overspeed
+int         ALTflaps = 0; // LJQC: ALT Flaps Switch to control the automatic flaps on F-16
+int         directmode = 0; //LJQC: Direct control mode just like in Su-27
+bool        TVC = FALSE;//LJQC: output TVC on/off on console
+
+//LJQC: DirectX Overlay Below=============================================================================
+
+LPDIRECT3D9             d3d = NULL; // Used to create the D3DDevice
+LPDIRECT3DDEVICE9       d3ddev = NULL; // Our rendering device
+LPD3DXFONT              pFont = NULL;
+HINSTANCE hInstance;
+int s_width = 1366;
+int s_height = 768;
+#define CENTERX (GetSystemMetrics(SM_CXSCREEN)/2)-(s_width/2)
+#define CENTERY (GetSystemMetrics(SM_CYSCREEN)/2)-(s_height/2)
+const MARGINS  margin = { 0, 0, s_width, s_height };
+
+
+HWND hWnd;
+HWND TargetWnd;
+MSG Message;
+RECT TargetRect;
+HINSTANCE  inj_hModule;
 
 
 
-void  CreateDebugConsole(LPCWSTR lPConsoleTitle)
+
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+void initD3D(HWND hWnd)
 {
+	d3d = Direct3DCreate9(D3D_SDK_VERSION);    // create the Direct3D interface
 
-	HANDLE lStdHandle = 0;
-	int hConHandle = 0;
-	FILE *fp = 0;
-	AllocConsole();
-	lStdHandle = GetStdHandle(STD_OUTPUT_HANDLE);
-	hConHandle = _open_osfhandle(PtrToUlong(lStdHandle), _O_TEXT);
+	D3DPRESENT_PARAMETERS d3dpp;    // create a struct to hold various device information
 
-	COORD size = { 80, 2 };
-	SetConsoleScreenBufferSize(lStdHandle, size);
-	SetConsoleTitle(lPConsoleTitle);
-	SetConsoleTextAttribute(lStdHandle, FOREGROUND_GREEN | FOREGROUND_INTENSITY | BACKGROUND_RED);
-	fp = _fdopen(hConHandle, "w");
-	*stdout = *fp;
-	setvbuf(stdout, NULL, _IONBF, 0);
+	ZeroMemory(&d3dpp, sizeof(d3dpp));    // clear out the struct for use
+	d3dpp.Windowed = TRUE;    // program windowed, not fullscreen
+	d3dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;    // discard old frames
+	d3dpp.hDeviceWindow = hWnd;    // set the window to be used by Direct3D
+	d3dpp.BackBufferFormat = D3DFMT_A8R8G8B8;     // set the back buffer format to 32-bit
+	d3dpp.BackBufferWidth = s_width;    // set the width of the buffer
+	d3dpp.BackBufferHeight = s_height;    // set the height of the buffer
+
+	d3dpp.EnableAutoDepthStencil = TRUE;
+	d3dpp.AutoDepthStencilFormat = D3DFMT_D16;
+
+	// create a device class using this information and the info from the d3dpp stuct
+	d3d->CreateDevice(D3DADAPTER_DEFAULT,
+		D3DDEVTYPE_HAL,
+		hWnd,
+		D3DCREATE_SOFTWARE_VERTEXPROCESSING,
+		&d3dpp,
+		&d3ddev);
+
+	D3DXCreateFont(d3ddev, 20, 0, FW_BOLD, 1, 0, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Arial", &pFont);
+
 }
 
-int a; //LJQC: output KTAS on console
-double b; //LJQC: output AOA on console
-int stickcommand;//LJQC: display pitch input on console
-int rollinput;//LJQC: display roll input on console
-double gload;//LJQC: output load factor on console
-bool TVC = FALSE;//LJQC: output TVC on/off on console
+
+
+int Render()
+{
+	d3ddev->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
+
+
+	d3ddev->BeginScene();
+
+	if (TargetWnd == GetForegroundWindow())
+
+	{
+		
+		RECT g_FontPosition = { 0, 0, 1000, 664 }; //LJQC: KTAS符号
+		pFont->DrawText(NULL, L"T", -1, &g_FontPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_SpeedvaluePosition = { 0, 0, 1050, 664 };//LJQC: KTAS 数值
+		std::ostringstream s1(a);
+		s1 << a;
+		pFont->DrawTextA(NULL, s1.str().c_str(), -1, &g_SpeedvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
+
+
+
+		RECT g_AOAPosition = { 0, 0, 1000, 724 };//LJQC: AOA符号
+		pFont->DrawText(NULL, L"α", -1, &g_AOAPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_AOAvaluePosition = { 0, 0, 1050, 724 };//LJQC: AOA 数值
+		std::ostringstream s2(AOA);
+		s2 << AOA;
+		pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
+
+
+
+
+		RECT g_GPosition = { 0, 0, 1000, 604 };//LJQC: G-load符号
+		pFont->DrawText(NULL, L"Gs", -1, &g_GPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_GvaluePosition = { 0, 0, 965, 604 };//LJQC: G-load 数值
+		std::ostringstream s3(Gs);
+		s3 << Gs;
+		pFont->DrawTextA(NULL, s3.str().c_str(), -1, &g_GvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
+
+
+
+
+
+		if (TVC == TRUE)
+		{
+			RECT g_TVCPosition = { 0, 0, 1350, 884 };//LJQC: TVC符号
+			pFont->DrawText(NULL, L"TVC ON", -1, &g_TVCPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		}
+
+		if (directmode == 1)
+		{
+			RECT g_SPosition = { 0, 0, 1350, 944 };
+			pFont->DrawText(NULL, L"Direct Mode", -1, &g_SPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		}
+
+		if (GetAsyncKeyState(0x52) & 0x8000)
+		{
+			RECT g_GLIMPosition = { 0, 0, 1350, 1004 };
+			pFont->DrawText(NULL, L"G-LIM OVRD", -1, &g_GLIMPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		}
+
+
+
+
+
+
+		RECT g_pitchPosition = { 0, 0, 1700, 664 };
+		pFont->DrawText(NULL, L"P", -1, &g_pitchPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_pvaluePosition = { 0, 0, 1750, 664 };//LJQC: pitch input 数值
+		std::ostringstream s4(stickcommand);
+		s4 << stickcommand;
+		pFont->DrawTextA(NULL, s4.str().c_str(), -1, &g_pvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
+
+
+
+
+		RECT g_rollPosition = { 0, 0, 1700, 724 };
+		pFont->DrawText(NULL, L"R", -1, &g_rollPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_rvaluePosition = { 0, 0, 1750, 724 };//LJQC: roll input 数值
+		std::ostringstream s5(rollinput);
+		s5 << rollinput;
+		pFont->DrawTextA(NULL, s5.str().c_str(), -1, &g_rvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+	}
+
+	d3ddev->EndScene(); // End the scene
+
+	// Present the backbuffer contents to the display
+	d3ddev->Present(NULL, NULL, NULL, NULL);
+
+	return 0;
+}
+
+
+
+BOOL RegisterDLLWindowClass(wchar_t szClassName[])
+{
+	WNDCLASSEX OverlayWnd;
+
+	OverlayWnd.cbClsExtra = 0;
+	OverlayWnd.cbSize = sizeof(WNDCLASSEX);
+	OverlayWnd.cbWndExtra = 0;
+	OverlayWnd.hbrBackground = (HBRUSH)CreateSolidBrush(RGB(0, 0, 0));
+	OverlayWnd.hCursor = LoadCursor(0, IDC_ARROW);
+	OverlayWnd.hIcon = LoadIcon(0, IDI_APPLICATION);
+	OverlayWnd.hIconSm = LoadIcon(0, IDI_APPLICATION);
+	OverlayWnd.hInstance = hInstance;
+	OverlayWnd.lpfnWndProc = WindowProc;
+	OverlayWnd.lpszClassName = L"A";
+	OverlayWnd.lpszMenuName = L"A";
+	OverlayWnd.style = CS_HREDRAW | CS_VREDRAW;
+
+	if (!RegisterClassEx(&OverlayWnd))
+		return 0;
+}
+
+
+
+LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	switch (message)
+	{
+	case WM_PAINT:
+
+		DwmExtendFrameIntoClientArea(hWnd, &margin);
+
+
+	case WM_DESTROY:
+
+		PostQuitMessage(0);
+		return 0;
+
+	default:
+		return DefWindowProc(hWnd, message, wParam, lParam);
+	}
+	return 0;
+}
+
 
 
 DWORD WINAPI InputThread(LPVOID lpParam)
 {
-	CreateDebugConsole(L"Debug Console");
+	Sleep(20*1000);
+	wchar_t *pString = reinterpret_cast<wchar_t *> (lpParam);
+	RegisterDLLWindowClass(L"A");
+	TargetWnd = FindWindow(L"A", L"A");
+	hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"A", L"A", WS_EX_TOPMOST | WS_POPUP, 100, 100, 1028, 786, NULL, NULL, NULL, inj_hModule);
+	SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
+	SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
+	ShowWindow(hWnd, SW_SHOW);
+	initD3D(hWnd);
 
-	std::cout << "Console Loaded!" << std::endl;
-	using namespace std;
-	while (1)
+	for (;;)
 	{
-		system("cls");
-		std::cout << a << " KTAS" << std::endl;
-		std::cout << setiosflags(ios::fixed) << setprecision(0) << b << " AOA" << std::endl;
-		std::cout << setiosflags(ios::fixed) << setprecision(2) << gload << " G" << std::endl;
+		if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
+		{
+			TranslateMessage(&Message);
+			DispatchMessage(&Message);
+		}
 
-		std::cout << "" << std::endl;
+		TargetWnd = FindWindow(0, L"DCS");
+		GetWindowRect(TargetWnd, &TargetRect);
+		MoveWindow(hWnd, TargetRect.left, TargetRect.top, TargetRect.right - TargetRect.left, TargetRect.bottom - TargetRect.top, true);
 
-		std::cout << stickcommand << " Pitch Stick" << std::endl;
+		if (!TargetWnd)
+		{
+			exit(0);
+		}
 
-		std::cout << "" << std::endl;
-
-		std::cout << rollinput << " Roll Stick" << std::endl;
-
-		std::cout << "" << std::endl;
-
-		if (TVC == FALSE) std::cout <<"OFF - TVC" << std::endl;
-		else std::cout << "ON - TVC" << std::endl;
-		
-		Sleep(10);
-
+		Render();
+		Sleep(1);
 	}
+
 
 	return 0;
 }
+
 
 BOOL APIENTRY DllMain(HMODULE hModule,
 	DWORD  ul_reason_for_call,
@@ -80,7 +275,8 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	switch (ul_reason_for_call)
 	{
 	case DLL_PROCESS_ATTACH:
-		CreateThread(0, 0, &InputThread, 0, 0, 0);
+		inj_hModule = hModule;
+		CreateThread(0, NULL, InputThread, (LPVOID)L"A", NULL, NULL);
 		break;
 	case DLL_THREAD_ATTACH:
 	case DLL_THREAD_DETACH:
@@ -89,6 +285,11 @@ BOOL APIENTRY DllMain(HMODULE hModule,
 	}
 	return TRUE;
 }
+
+
+//LJQC: DirectX Overlay Ends.====================================================================================
+
+
 
 namespace F16
 {
@@ -102,19 +303,12 @@ namespace F16
 	};
 
 
-
-
-
-
 	class F16FlightControls
 	{
 
 	public:
 		bool		simInitialized;
-		int         Speedlevel; // LJQC: add speedlevel
-		int         autopilot = 0; // LJQC: add autopilot/pull-up when overspeed
-		int         ALTflaps = 0; // LJQC: ALT Flaps Switch to control the automatic flaps on F-16
-		int         directmode = 0; //LJQC: Direct control mode just like in Su-27
+		
 
 		double		leadingEdgeFlap_PCT;	// Leading edge flap as a percent of maximum (0 to 1)
 		double      blank = 0; //LJQC: add 0 value
@@ -313,7 +507,8 @@ namespace F16
 			double aileronGained = 0; //LJQC: make ARI only works at 0~30deg AOA=================================================================
 			if (aoa_filtered < 30 && aoa_filtered > 0) aileronGained = limit(0.05 * aoa_filtered, 0.0, 1.5) * aileron_commanded;
 
-			b = aoa_filtered;
+			b = aoa_filtered; //double
+			AOA = b; //int
 
 			double finalRudderCommand = aileronGained + yawRateFilteredWithSideAccel + rudderCommandFilteredWTrim;
 
@@ -378,22 +573,22 @@ namespace F16
 			}
 			else if (TVC == FALSE)
 			{
-					longStickInputForce = longStickInput * 180.0;
+				longStickInputForce = longStickInput * 180.0;
 			}
 			stickcommand = longStickInputForce;
 
 			//LJQC: AOA Limiter Fake/Hack when TVC is OFF==============================
 			if (TVC == FALSE)
 			{
-				if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + ( b * 2.0 - 36.0 ) * (70.0/20.8);
-				else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0/9.2);
+				if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + (b * 2.0 - 36.0) * (70.0 / 20.8);
+				else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0 / 9.2);
 				else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (80.0 / 20.0);
 
 				longStickInputForce = limit(longStickInputForce, -180.0, 180.0);
 			}
 			else if (TVC == TRUE) longStickInputForce = limit(longStickInputForce, -180.0, 80.0);
 			longStickForce = longStickInputForce;
-			
+
 
 			double longStickCommand_G = 0.0;
 			if (abs(longStickInputForce) <= 8.0)
@@ -478,7 +673,8 @@ namespace F16
 		// Controller for pitch
 		double fcs_pitch_controller(double longStickInput, double pitchTrim, double angle_of_attack_ind, double pitch_rate, double az, double differentialCommand, double dynPressure_LBFT2, double dt)
 		{
-			gload = az + 1;
+			gload = az + 1; //double
+			Gs = gload; //int
 			//pitchrate = pitch_rate;
 			if (!(simInitialized))
 			{
@@ -510,7 +706,7 @@ namespace F16
 			azFiltered = accelFilter.Filter(!(simInitialized), dt, az - 1.0);
 
 			double alphaLimited = limit(angle_of_attack_ind, -95.0, 179.0);
-			
+
 			double alphaLimitedRate = 10.0 * (alphaLimited - alphaFiltered); //10.0
 
 
@@ -624,7 +820,7 @@ namespace F16
 			if (GetAsyncKeyState(0x53) & 0x8000) directmode = 1;
 			else if (GetAsyncKeyState(0x53) == 0) directmode = 0;
 
-			if (GetAsyncKeyState(0x54) & 1) TVC =! TVC;
+			if (GetAsyncKeyState(0x54) & 1) TVC = !TVC;
 
 			//pitchinput = finalPitchCommandTotal;
 
@@ -727,7 +923,7 @@ namespace F16
 
 			double latStickForce = latStickForceFilter.Filter(!(simInitialized), dt, latStickForceCmd);
 
-			
+
 
 			double latStickForceBiased = latStickForce - (ay * 8.9);  // CJS: remove side acceleration bias?
 
