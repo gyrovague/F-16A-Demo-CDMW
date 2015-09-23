@@ -12,17 +12,22 @@
 #include "DummyFilter.h"
 
 int         a = 0.0; //LJQC: output KTAS on console
-int         AOA = 0;
-double      b = 0.0; //LJQC: output AOA on console
+int         AOA = 0;//LJQC: AOA display on HMCS
+double      b = 0.0; //LJQC: AOA used for FPM (Velocity Vector) display
+double      Beta;//LJQC: Beta used for FPM (Velocity Vector) display
 int         stickcommand = 0;//LJQC: display pitch input on console
 int         rollinput = 0;//LJQC: display roll input on console
 double      gload = 0.0;//LJQC: output load factor on console
-int         Gs = 0;
+double         Gs = 0.0;
 int         Speedlevel; // LJQC: add speedlevel
 int         autopilot = 0; // LJQC: add autopilot/pull-up when overspeed
 int         ALTflaps = 0; // LJQC: ALT Flaps Switch to control the automatic flaps on F-16
 int         directmode = 0; //LJQC: Direct control mode just like in Su-27
 bool        TVC = FALSE;//LJQC: output TVC on/off on console
+double      MACH; //LJQC: Mach Number for HMCS display
+int         ALT; //LJQC: Altitude for HMCS display
+int         VVI; //LJQC: Vertical Velocity for HMCS display
+
 
 //LJQC: DirectX Overlay Below=============================================================================
 
@@ -109,6 +114,11 @@ int Render()
 		s2 << AOA;
 		pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
+		RECT g_MACHvaluePosition = { 0, 0, 1025, 784 };//LJQC: Mach Number
+		std::ostringstream s6(MACH);
+		s6 << MACH;
+		pFont->DrawTextA(NULL, s6.str().c_str(), -1, &g_MACHvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
 
 
 
@@ -117,7 +127,7 @@ int Render()
 		RECT g_GPosition = { 0, 0, 1000, 604 };//LJQC: G-load符号
 		pFont->DrawText(NULL, L"Gs", -1, &g_GPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_GvaluePosition = { 0, 0, 965, 604 };//LJQC: G-load 数值
+		RECT g_GvaluePosition = { 0, 0, 935, 604 };//LJQC: G-load 数值
 		std::ostringstream s3(Gs);
 		s3 << Gs;
 		pFont->DrawTextA(NULL, s3.str().c_str(), -1, &g_GvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -140,7 +150,7 @@ int Render()
 			pFont->DrawText(NULL, L"Direct Mode", -1, &g_SPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 
-		if (GetAsyncKeyState(0x52) & 0x8000)
+		if (TVC == TRUE && GetAsyncKeyState(0x52) & 0x8000)
 		{
 			RECT g_GLIMPosition = { 0, 0, 1350, 1004 };
 			pFont->DrawText(NULL, L"G-LIM OVRD", -1, &g_GLIMPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -171,6 +181,31 @@ int Render()
 		std::ostringstream s5(rollinput);
 		s5 << rollinput;
 		pFont->DrawTextA(NULL, s5.str().c_str(), -1, &g_rvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_ALTvaluePosition = { 0, 0, 1725, 784 };//LJQC: Altitude Number Display
+		std::ostringstream s7(ALT);
+		s7 << ALT;
+		pFont->DrawTextA(NULL, s7.str().c_str(), -1, &g_ALTvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_BAROPosition = { 0, 0, 1870, 784 };
+		pFont->DrawText(NULL, L"BARO", -1, &g_BAROPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
+		/*RECT g_VVIvaluePosition = { 0, 0, 1725, 844 };//LJQC: VVI Display
+		std::ostringstream s8(VVI);
+		s8 << VVI;
+		pFont->DrawTextA(NULL, s8.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_VVIPosition = { 0, 0, 1870, 844 };
+		pFont->DrawText(NULL, L"VV", -1, &g_VVIPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		*/
+
+		RECT g_CrossPosition = { 0, 0, 1350, 764}; //LJQC: Gun cross display
+		pFont->DrawText(NULL, L"+", -1, &g_CrossPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
+		RECT g_FPMPosition = { 0, 0, 1350 + Beta * 15.0, 764 + b * 15.0 }; //LJQC: Flight Path Marker display (Velocity Vector)
+		pFont->DrawText(NULL, L"-O-", -1, &g_FPMPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 	}
 
@@ -295,6 +330,7 @@ namespace F16
 {
 	// TODO! real actuator support
 
+
 	class F16FcsController
 	{
 	public:
@@ -311,8 +347,8 @@ namespace F16
 		
 
 		double		leadingEdgeFlap_PCT;	// Leading edge flap as a percent of maximum (0 to 1)
-		double      blank = 0; //LJQC: add 0 value
-		double      overspeed = 10; //LJQC: Deal with overspeed
+		double      blank = 0; //LJQC: Force elevator deflect 0deg
+		double      overspeed = 10; //LJQC: Force elevator deflect 10deg
 		//protected:
 		double		leading_edge_flap_integral;
 		double		leading_edge_flap_integrated;
@@ -555,6 +591,31 @@ namespace F16
 
 			return trailing_edge_flap_deflection;
 		}
+
+		double getnumber(double mach)
+		{
+			MACH = floor(mach * 1000.0f + 0.5) / 1000.0f;
+			return MACH;
+		}
+
+		double getnumber2(double altitude_FT)
+		{
+			ALT = altitude_FT;
+			return ALT;
+		}
+
+		double getnumber3(double VerticalVelocity_FPM)
+		{
+			VVI = VerticalVelocity_FPM;
+			return VVI;
+		}
+
+		double getnumber4(double beta_DEG)
+		{
+			Beta = beta_DEG;
+			return Beta;
+		}
+
 		// Stick force schedule for pitch control
 		double fcs_pitch_controller_force_command(double longStickInput, double pitchTrim, double dt)
 		{
@@ -582,7 +643,7 @@ namespace F16
 			{
 				if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + (b * 2.0 - 36.0) * (70.0 / 20.8);
 				else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0 / 9.2);
-				else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (80.0 / 20.0);
+				else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (180.0 / 20.0);
 
 				longStickInputForce = limit(longStickInputForce, -180.0, 180.0);
 			}
@@ -615,8 +676,17 @@ namespace F16
 
 			//LJQC: G-limit Override===============================================================================================
 			double longStickCommandWithTrimLimited_G;
-			if (GetAsyncKeyState(0x52) & 0x8000) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
-			else longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
+
+			if (TVC == TRUE)
+			{
+				if (GetAsyncKeyState(0x52) & 0x8000) longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 50.0);
+				else longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -4.0, 11.0);
+			}
+			else if (TVC == FALSE)
+			{
+				longStickCommandWithTrimLimited_G = limit(longStickCommandWithTrim_G, -11.0, 11.0);
+			}
+
 			double longStickCommandWithTrimLimited_G_Rate;
 			if (TVC == TRUE)
 			{
@@ -674,7 +744,7 @@ namespace F16
 		double fcs_pitch_controller(double longStickInput, double pitchTrim, double angle_of_attack_ind, double pitch_rate, double az, double differentialCommand, double dynPressure_LBFT2, double dt)
 		{
 			gload = az + 1; //double
-			Gs = gload; //int
+			Gs = floor(gload * 10.0f + 0.5) / 10.0f;
 			//pitchrate = pitch_rate;
 			if (!(simInitialized))
 			{

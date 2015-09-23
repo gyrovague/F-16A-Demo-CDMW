@@ -136,7 +136,10 @@ namespace F16
 	double		leadingEdgeFlap_PCT		= 0.0;			// Leading edge flap as a percent of maximum (0 to 1)
 	double		flap_DEG				= 0.0;			// Trailing edge flap deflection (deg)
 	double		flap_PCT				= 0.0;			// Trailing edge flap deflection (0 to 1)
-
+	double      MACH = 0.0;//LJQC: Mach Number for HMCS display
+	int      ALT = 0;//LJQC: Altitude for HMCS display
+	int      VVI = 0;//LJQC: Vertical Velocity for HMCS display
+	double      Beta = 0.0;//LJQC: Beta for FPM calc
 	double		ay_world				= 0.0;			// World referenced up/down acceleration (m/s^2)
 	double		accz					= 0.0;			// Az (per normal direction convention) out the bottom of the a/c (m/s^2)
 	double		accy					= 0.0;			// Ay (per normal direction convention) out the right wing (m/s^2)
@@ -295,7 +298,11 @@ void ed_fm_simulate(double dt)
 	F16::rudder_DEG = limit(F16::rudder_DEG,-30.0,30.0);
 
 	F16::flap_DEG = F16::FlightControls.fcs_flap_controller(F16::Atmos.totalVelocity_FPS);
-	
+	F16::MACH = F16::FlightControls.getnumber(F16::Atmos.mach);
+	F16::ALT = F16::FlightControls.getnumber2(F16::Atmos.altitude_FT);
+	F16::VVI = F16::FlightControls.getnumber3(F16::Atmos.VerticalVelocity_FPM);
+	F16::Beta = F16::FlightControls.getnumber4(F16::beta_DEG);
+
 	// reuse in drawargs
 	F16::aileron_PCT = F16::aileron_DEG / 21.5;
 	F16::elevator_PCT = F16::elevator_DEG / 25.0;

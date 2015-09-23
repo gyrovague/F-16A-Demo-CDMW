@@ -53,6 +53,7 @@ namespace F16
 	// -> adapt to support either one?
 	// Turbine inlet temperature: 1,350 °C (2,460 °F)
 
+
 	class F16Engine
 	{
 	protected:
@@ -65,8 +66,11 @@ namespace F16
 		double percentPower;
 		double afterburner;
 
+
 		// amount of fuel used in this engine setting in current flight conditions (temperature, airspeed..)
 		double fuelPerFrame;
+
+		
 
 		// fuel flow: LEAN - RICH
 		// -> 100pph increase?
@@ -156,7 +160,7 @@ namespace F16
 			}
 
 			// ED_FM_ENGINE_1_THRUST:
-			return (throttleInput/100.0) * 5000 * 9.81;
+			return (throttleInput/100.0) * 9000 * 9.81;
 		}
 		double getEngineRelatedThrust() const
 		{
@@ -311,10 +315,11 @@ namespace F16
 		//TODO: This should really be a look-up table per the document reference but this is sufficient for now...
 		double altTemp = (alt/55000.0);
 		double altTemp2 = (alt/50000.0);
+
 		double machLimited = limit(mach,0.2,1.0);
 		double Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
 		double Tmil = (-25958.0 * pow(machLimited,3.0) + 34336.0 * pow(machLimited,2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0);
-		double Tmax = (26702.0 * pow(machLimited,2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
+		double Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
 
 		double thrustTmp = 0.0;
 		if(m_power3 < 50.0)
@@ -326,13 +331,14 @@ namespace F16
 			thrustTmp = Tmil + (Tmax-Tmil)*(m_power3 - 50.0)/50.0;
 		}
 
-		thrust_N = limit(thrustTmp,0.0,129000.0);
+		thrust_N = limit(thrustTmp, 0.0, 274000.0);
 
 		// TODO: usage by actual engine ?
 		//fuelPerFrame =  10 * throttleInput * frameTime; //10 kg persecond
 		fuelPerFrame =  10 * frameTime; //10 kg persecond
-	}
 
+	}
+	
 	/*
 	A table I read said that the F-16 C expended 415 kg of fuel per minute at mach .5 at sea level, 
 	310 kg/min at mach .8 at 15,000 feet, 

@@ -45,6 +45,7 @@ namespace F16
 		double		altitude_FT;		// Absolute altitude MSL (ft)
 		double		ps_LBFT2;			// Ambient calculated pressure (lb/ft^2)
 		double		totalVelocity_FPS;	// Total velocity (always positive) (ft/s)
+		double		VerticalVelocity_FPM;	//LJQC: Vertical velocity (ft/minutes)
 
 		F16Atmosphere() 
 			: temp(0)
@@ -60,6 +61,7 @@ namespace F16
 			, altitude_FT(0)
 			, ps_LBFT2(0)
 			, totalVelocity_FPS(0)
+			, VerticalVelocity_FPM(0)
 		{}
 		~F16Atmosphere() {}
 
@@ -82,6 +84,8 @@ namespace F16
 			velocity_world_cs.y = vy;
 			velocity_world_cs.z = vz;
 
+			
+
 			wind.x = wind_vx;
 			wind.y = wind_vy;
 			wind.z = wind_vz;
@@ -96,6 +100,9 @@ namespace F16
 		void updateFrame(double frameTime)
 		{
 			totalVelocity_FPS = sqrt(airspeed.x * airspeed.x + airspeed.y * airspeed.y + airspeed.z * airspeed.z) * F16::meterToFoot;
+
+			VerticalVelocity_FPM = sqrt(airspeed.x * airspeed.x + airspeed.y * airspeed.y) * F16::meterToFoot * 60.0;
+			
 			if (totalVelocity_FPS < 0.01)
 			{
 				totalVelocity_FPS = 0.01;
