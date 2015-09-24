@@ -137,13 +137,19 @@ namespace F16
 	double		flap_DEG				= 0.0;			// Trailing edge flap deflection (deg)
 	double		flap_PCT				= 0.0;			// Trailing edge flap deflection (0 to 1)
 	double      MACH = 0.0;//LJQC: Mach Number for HMCS display
-	int      ALT = 0;//LJQC: Altitude for HMCS display
-	int      VVI = 0;//LJQC: Vertical Velocity for HMCS display
+	double      ALT = 0;//LJQC: Altitude for HMCS display
+	double      VVI = 0;//LJQC: Vertical Velocity for HMCS display
 	double      Beta = 0.0;//LJQC: Beta for FPM calc
 	double		ay_world				= 0.0;			// World referenced up/down acceleration (m/s^2)
 	double		accz					= 0.0;			// Az (per normal direction convention) out the bottom of the a/c (m/s^2)
 	double		accy					= 0.0;			// Ay (per normal direction convention) out the right wing (m/s^2)
-
+	double      getAccelx = 0.0;
+	double      getpAccelx = 0.0;
+	double      num7 = 0.0;
+	double      num8 = 0.0;
+	double      num9 = 0.0;
+	double      num10 = 0.0;
+	double      num11 = 0.0;
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -300,7 +306,6 @@ void ed_fm_simulate(double dt)
 	F16::flap_DEG = F16::FlightControls.fcs_flap_controller(F16::Atmos.totalVelocity_FPS);
 	F16::MACH = F16::FlightControls.getnumber(F16::Atmos.mach);
 	F16::ALT = F16::FlightControls.getnumber2(F16::Atmos.altitude_FT);
-	F16::VVI = F16::FlightControls.getnumber3(F16::Atmos.VerticalVelocity_FPM);
 	F16::Beta = F16::FlightControls.getnumber4(F16::beta_DEG);
 
 	// reuse in drawargs
@@ -381,8 +386,10 @@ void ed_fm_set_surface (double		h,//surface height under the center of aircraft
 {
 	// TODO: check height, set for ground effect simulation?
 	// also if weight on wheels?
-	if (F16::wingSpan_FT >= (F16::meterToFoot*h) && F16::LandingGear.isWoW() == false)
+	//if (F16::wingSpan_FT >= (F16::meterToFoot*h) && F16::LandingGear.isWoW() == false)
 	{
+		F16::num11 = F16::FlightControls.getnumber11(h_obj);
+		
 		// in ground effect with the surface?
 		// flying above ground, no weight on wheels?
 	}
@@ -416,7 +423,7 @@ void ed_fm_set_current_mass_state ( double mass,
 }
 
 /*
-called before simulation to set up your environment for the next step
+called before simulation to set up your environment for the next step=================================================================================================
 */
 void ed_fm_set_current_state (double ax,//linear acceleration component in world coordinate system
 							double ay,//linear acceleration component in world coordinate system
@@ -440,6 +447,9 @@ void ed_fm_set_current_state (double ax,//linear acceleration component in world
 							)
 {
 	F16::ay_world = ay;
+	F16::getAccelx = F16::FlightControls.getnumber5(ax);
+	
+	F16::num9 = F16::FlightControls.getnumber9(vy);
 }
 
 void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration component in body coordinate system (meters/sec^2)
@@ -465,7 +475,10 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
 										)
 {
 	F16::Atmos.setAirspeed(vx, vy, vz, wind_vx, wind_vy, wind_vz);
-
+	F16::getpAccelx = F16::FlightControls.getnumber6(ax);
+	F16::num10 = F16::FlightControls.getnumber10(ay);
+	F16::num7 = F16::FlightControls.getnumber7(az);
+	F16::num8 = F16::FlightControls.getnumber8(vz);
 	//-------------------------------
 	// Start of setting F-16 states
 	//-------------------------------
@@ -696,6 +709,7 @@ void ed_fm_set_internal_fuel(double fuel)
 	*/
 
 	F16::Fuel.setInternalFuel(fuel);
+	
 }
 
 /*
@@ -703,6 +717,7 @@ void ed_fm_set_internal_fuel(double fuel)
 */
 double ed_fm_get_internal_fuel()
 {
+	
 	return F16::Fuel.getInternalFuel();
 }
 
@@ -1097,6 +1112,7 @@ bool ed_fm_make_balance (double & ax,//linear acceleration component in world co
 									double & yaw,  //radians
 									double & pitch,//radians
 									double & roll)//radians
+									
 {
 	return false;
 }
