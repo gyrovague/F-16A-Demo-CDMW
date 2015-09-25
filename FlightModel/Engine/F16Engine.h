@@ -160,7 +160,7 @@ namespace F16
 			}
 
 			// ED_FM_ENGINE_1_THRUST:
-			return (throttleInput/100.0) * 5000 * 9.81;
+			return (throttleInput/100.0) * 9000 * 9.81;
 		}
 		double getEngineRelatedThrust() const
 		{
@@ -319,7 +319,7 @@ namespace F16
 		double machLimited = limit(mach,0.2,1.0);
 		double Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
 		double Tmil = (-25958.0 * pow(machLimited,3.0) + 34336.0 * pow(machLimited,2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0);
-		double Tmax = (26702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
+		double Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
 
 		double thrustTmp = 0.0;
 		if(m_power3 < 50.0)
@@ -331,7 +331,7 @@ namespace F16
 			thrustTmp = Tmil + (Tmax-Tmil)*(m_power3 - 50.0)/50.0;
 		}
 
-		thrust_N = limit(thrustTmp, 0.0, 129000.0);
+		thrust_N = limit(thrustTmp, 0.0, 274000.0);
 
 		// TODO: usage by actual engine ?
 		//fuelPerFrame =  10 * throttleInput * frameTime; //10 kg persecond

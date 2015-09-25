@@ -12,18 +12,19 @@
 
 #include "DummyFilter.h"
 
-
-
-int         a = 0; //LJQC: output KTAS on console
+double      dele;//LJQC: Elevator deflection for debug use
+bool        HMCS = TRUE;//LJQC: Turn ON/OFF HMCS
+bool        CATI = TRUE;//LJQC: CAT I/III Swtich
+int         a = 0; //LJQC: display KTAS on HMCS
 int         AOA = 0;//LJQC: AOA display on HMCS
 double      b = 0.0; //LJQC: AOA used for FPM (Velocity Vector) display
 double      Beta;//LJQC: Beta used for FPM (Velocity Vector) display
-int         stickcommand = 0;//LJQC: display pitch input on console
-int         rollinput = 0;//LJQC: display roll input on console
-double      gload = 0.0;//LJQC: output load factor on console
+int         stickcommand = 0;//LJQC: display pitch input
+int         rollinput = 0;//LJQC: display roll input
+double      gload = 0.0;//LJQC: output load factor
 double         Gs = 0.0;
 int         Speedlevel; // LJQC: add speedlevel
-int         autopilot = 0; // LJQC: add autopilot/pull-up when overspeed
+int         autopilot = 0; // LJQC: a 0 value
 int         ALTflaps = 0; // LJQC: ALT Flaps Switch to control the automatic flaps on F-16
 int         directmode = 0; //LJQC: Direct control mode just like in Su-27
 bool        TVC = FALSE;//LJQC: output TVC on/off on console
@@ -48,6 +49,12 @@ double      num11 = 0.0;//Bank / Height
 double         KTASast = 0.0;
 double         ALTast = 0.0;
 
+//Trim function:
+double         pitchtrim = 0.0;
+
+//HMCS position debug
+double         displayX = 0.0;
+double         displayY = 0.0;
 
 //For clock display:
 double c1 = 30.0 / 180.0 * M_PI;
@@ -227,24 +234,24 @@ int Render()
 
 		//AOA display=====================================================================================================
 
-		RECT g_AOAPosition = { 0, 0, 1001, 504 };
+		RECT g_AOAPosition = { 0, 0, 1056, 504 };
 		pFont->DrawText(NULL, L"— α", -1, &g_AOAPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_AOAsymPosition = { 0, 0, 960, 504 - b * 0.56 };
+		RECT g_AOAsymPosition = { 0, 0, 1015, 504 - b * 0.56 };
 		pFont->DrawText(NULL, L">", -1, &g_AOAsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_AOAvaluePosition = { 0, 0, 914, 504 - b * 0.56 };//LJQC: AOA 数值
+		RECT g_AOAvaluePosition = { 0, 0, 969, 504 - b * 0.56 };//LJQC: AOA 数值
 		std::ostringstream s2(AOA);
 		s2 << AOA;
 		pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		//Mach number display===============================================================================================
 
-		RECT g_MACHPosition = { 0, 0, 990, 1024 };//LJQC: Mach
+		RECT g_MACHPosition = { 0, 0, 990 - 26, 1024 - 7 };//LJQC: Mach
 		pFont->DrawText(NULL, L"M", -1, &g_MACHPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_MACHvaluePosition = { 0, 0, 1050, 1024 };//LJQC: Mach Number
+		RECT g_MACHvaluePosition = { 0, 0, 1050 - 26, 1024 - 7 };//LJQC: Mach Number
 		std::ostringstream s6(MACH);
 		s6 << MACH;
 		pFont->DrawTextA(NULL, s6.str().c_str(), -1, &g_MACHvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -254,10 +261,10 @@ int Render()
 		//G-load display ===============================================================================================
 
 
-		RECT g_GPosition = { 0, 0, 990, 984 };//LJQC: G-load符号
+		RECT g_GPosition = { 0, 0, 990 -26, 984 -7 };//LJQC: G-load符号
 		pFont->DrawText(NULL, L"G", -1, &g_GPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_GvaluePosition = { 0, 0, 1050, 984 };//LJQC: G-load 数值
+		RECT g_GvaluePosition = { 0, 0, 1050 - 26, 984 - 7 };//LJQC: G-load 数值
 		std::ostringstream s3(Gs);
 		s3 << Gs;
 		pFont->DrawTextA(NULL, s3.str().c_str(), -1, &g_GvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -292,15 +299,15 @@ int Render()
 
 		Sideforce = num7 * 20.0;
 
-		RECT g_headingvaluePosition = { 0, 0, 1350 + num7 * 50.0, 1384 };
+		RECT g_headingvaluePosition = { 0, 0, 1350 + num7 * 50.0, 304 };
 		std::ostringstream s13(Sideforce);
 		s13 << Sideforce;
 		pFont->DrawTextA(NULL, s13.str().c_str(), -1, &g_headingvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_DeltasymbolPosition = { 0, 0, 1350 + num7 * 50.0, 1354 };
+		RECT g_DeltasymbolPosition = { 0, 0, 1350 + num7 * 50.0, 274 };
 		pFont->DrawText(NULL, L"Δ", -1, &g_DeltasymbolPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		
-		RECT g_Deltasymbol2Position = { 0, 0, 1350, 1354 };
+		RECT g_Deltasymbol2Position = { 0, 0, 1350, 274 };
 		pFont->DrawText(NULL, L"•", -1, &g_Deltasymbol2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		
 
@@ -329,6 +336,25 @@ int Render()
 		DrawLine2(2330 / 2.0, 1244 / 2.0, 2330 / 2.0, 884 / 2.0, 132, 251, 169, 255);
 		DrawLine2(2330 / 2.0, 1244 / 2.0, 2030 / 2.0, 1244 / 2.0, 132, 251, 169, 255);
 
+		//HMCS position for debug only===================================================================================
+		/*
+		RECT g_PITCHtrimsvaluePosition = { 0, 0, 850, 854 };
+		std::ostringstream s19(displayX);
+		s19 << displayX;
+		pFont->DrawTextA(NULL, s19.str().c_str(), -1, &g_PITCHtrimsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_PITCHoutputsvaluePosition = { 0, 0, 850, 804 };
+		std::ostringstream s20(displayY);
+		s20 << displayY;
+		pFont->DrawTextA(NULL, s20.str().c_str(), -1, &g_PITCHoutputsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		*/
+
+
+
+		RECT g_CATPosition = { 0, 0, 1640 - 26 + 61, 1024 + 28 -40};//CAT I/III display==============================================================================================
+		if (CATI == TRUE) pFont->DrawText(NULL, L"CAT I", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		else if (CATI == FALSE) pFont->DrawText(NULL, L"CAT III", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		
 		//Altitude display =================================================================================================
 
 		RECT g_ALTvaluePosition = { 0, 0, 1675, 784 };//LJQC: Altitude Number Display
@@ -360,35 +386,35 @@ int Render()
 
 		VVI = num9 * F16::meterToFoot * 60.0;
 
-		RECT g_VVIPosition = { 0, 0, 1689, 504 }; // VVI symbol position
+		RECT g_VVIPosition = { 0, 0, 1689 -55, 504 }; // VVI symbol position
 		pFont->DrawText(NULL, L"VV —", -1, &g_VVIPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		if (VVI > -2000 && VVI < 2000)
 		{
-			RECT g_VVIsymPosition = { 0, 0, 1746, 504 - num9 * 10.0 };
+			RECT g_VVIsymPosition = { 0, 0, 1746 - 56, 504 - num9 * 10.0 };
 			pFont->DrawText(NULL, L"<", -1, &g_VVIsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-			RECT g_VVIvaluePosition = { 0, 0, 1808, 504 - num9 * 10.0 };
+			RECT g_VVIvaluePosition = { 0, 0, 1808 - 55, 504 - num9 * 10.0 };
 			std::ostringstream s11(VVI);
 			s11 << VVI;
 			pFont->DrawTextA(NULL, s11.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 		else if (VVI <= -2000)
 		{
-			RECT g_VVIsymPosition = { 0, 0, 1746, 504 - c14 * 10.0 };
+			RECT g_VVIsymPosition = { 0, 0, 1746 - 55, 504 - c14 * 10.0 };
 			pFont->DrawText(NULL, L"<", -1, &g_VVIsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-			RECT g_VVIvaluePosition = { 0, 0, 1808, 504 - c14 * 10.0 };
+			RECT g_VVIvaluePosition = { 0, 0, 1808 - 55, 504 - c14 * 10.0 };
 			std::ostringstream s11(VVI);
 			s11 << VVI;
 			pFont->DrawTextA(NULL, s11.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 		else if (VVI >= 2000)
 		{
-			RECT g_VVIsymPosition = { 0, 0, 1746, 504 - c15 * 10.0 };
+			RECT g_VVIsymPosition = { 0, 0, 1746 - 55, 504 - c15 * 10.0 };
 			pFont->DrawText(NULL, L"<", -1, &g_VVIsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-			RECT g_VVIvaluePosition = { 0, 0, 1808, 504 - c15 * 10.0 };
+			RECT g_VVIvaluePosition = { 0, 0, 1808 - 55, 504 - c15 * 10.0 };
 			std::ostringstream s11(VVI);
 			s11 << VVI;
 			pFont->DrawTextA(NULL, s11.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -401,12 +427,12 @@ int Render()
 
 		Height = ALT - num11 * F16::meterToFoot;
 
-		RECT g_HeightvaluePosition = { 0, 0, 1675, 1024 }; //Experiment =================================================
+		RECT g_HeightvaluePosition = { 0, 0, 1675 - 26 + 61, 1024 + 28 }; //Experiment =================================================
 		std::ostringstream s12(Height);
 		s12 << Height;
 		pFont->DrawTextA(NULL, s12.str().c_str(), -1, &g_HeightvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_BAROPosition = { 0, 0, 1600, 1024 };
+		RECT g_BAROPosition = { 0, 0, 1600 - 26 + 61, 1024 + 28 };
 		pFont->DrawText(NULL, L"R", -1, &g_BAROPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		
@@ -452,62 +478,62 @@ double      num11 = 0.0;//az
 
 
 		//Vertical lines for AOA display BELOW========================================================
-		RECT g_LinePositionm1 = { 0, 0, 1050 - 80, 584 - 170 };
+		RECT g_LinePositionm1 = { 0, 0, 1025, 584 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePositionm1, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition0 = { 0, 0, 1050 - 80, 614 - 170 };
+		RECT g_LinePosition0 = { 0, 0, 1025, 614 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition0, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition1 = { 0, 0, 1050 - 80, 644 - 170 };
+		RECT g_LinePosition1 = { 0, 0, 1025, 644 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition1, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition2 = { 0, 0, 1050 - 80, 674 - 170 };
+		RECT g_LinePosition2 = { 0, 0, 1025, 674 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition2, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition3 = { 0, 0, 1050 - 80, 704 - 170 };
+		RECT g_LinePosition3 = { 0, 0, 1025, 704 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition3, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition4 = { 0, 0, 1050 - 80, 734 - 170 };
+		RECT g_LinePosition4 = { 0, 0, 1025, 734 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition4, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition5 = { 0, 0, 1050 - 80, 759 - 170 };
+		RECT g_LinePosition5 = { 0, 0, 1025, 759 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition5, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		//Vertical lines for AOA display ABOVE========================================================
 
 
 
 		//Vertical lines for VVI display BELOW========================================================
-		RECT g_LinePosition6 = { 0, 0, 1730, 584 - 170 };
+		RECT g_LinePosition6 = { 0, 0, 1730 -55, 584 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition6, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition7 = { 0, 0, 1730, 614 - 170 };
+		RECT g_LinePosition7 = { 0, 0, 1730 - 55, 614 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition7, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition8 = { 0, 0, 1730, 644 - 170 };
+		RECT g_LinePosition8 = { 0, 0, 1730 - 55, 644 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition8, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition9 = { 0, 0, 1730, 674 - 170 };
+		RECT g_LinePosition9 = { 0, 0, 1730 - 55, 674 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition9, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition10 = { 0, 0, 1730, 704 - 170 };
+		RECT g_LinePosition10 = { 0, 0, 1730 - 55, 704 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition10, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition11 = { 0, 0, 1730, 734 - 170 };
+		RECT g_LinePosition11 = { 0, 0, 1730 - 55, 734 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition11, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_LinePosition12 = { 0, 0, 1730, 759 - 170 };
+		RECT g_LinePosition12 = { 0, 0, 1730 - 55, 759 - 170 };
 		pFont->DrawText(NULL, L"|", -1, &g_LinePosition12, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		//Vertical lines for VVI display ABOVE========================================================
 	}
@@ -581,23 +607,32 @@ DWORD WINAPI InputThread(LPVOID lpParam)
 
 	for (;;)
 	{
-		if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
+		if (HMCS == TRUE)
 		{
-			TranslateMessage(&Message);
-			DispatchMessage(&Message);
+			if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
+			{
+				TranslateMessage(&Message);
+				DispatchMessage(&Message);
+			}
+
+			TargetWnd = FindWindow(0, L"DCS");
+			GetWindowRect(TargetWnd, &TargetRect);
+			MoveWindow(hWnd, TargetRect.left, TargetRect.top, TargetRect.right - TargetRect.left, TargetRect.bottom - TargetRect.top, true);
+
+			if (!TargetWnd)
+			{
+				exit(0);
+			}
+
+			Render();
+			Sleep(1);
 		}
-
-		TargetWnd = FindWindow(0, L"DCS");
-		GetWindowRect(TargetWnd, &TargetRect);
-		MoveWindow(hWnd, TargetRect.left, TargetRect.top, TargetRect.right - TargetRect.left, TargetRect.bottom - TargetRect.top, true);
-
-		if (!TargetWnd)
+		else if (HMCS == FALSE)
 		{
-			exit(0);
+			Sleep(1);
+			d3ddev->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
+			d3ddev->Present(NULL, NULL, NULL, NULL);
 		}
-
-		Render();
-		Sleep(1);
 	}
 
 
@@ -965,10 +1000,30 @@ namespace F16
 			//LJQC: AOA Limiter Fake/Hack when TVC is OFF==============================
 			if (TVC == FALSE)
 			{
-				if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + (b * 2.0 - 36.0) * (70.0 / 20.8);
-				else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0 / 9.2);
-				else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (180.0 / 20.0);	
+				if (CATI == TRUE) //CAT I Limiter
+				{
+					if (b >= 18.0 && b < 25.4) longStickInputForce = longStickInputForce + (b * 2.0 - 36.0) * (70.0 / 14.8);
+					else if (b >= 25.4 && b < 30.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 50.8) * (110.0 / 9.2);
+					else if (b >= 30.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 60.0) * (180.0 / 20.0);
+				}
+				else if (CATI == FALSE) //CAT III Limiter
+				{
+					if (b >= 8.0 && b < 13.4) longStickInputForce = longStickInputForce + (b * 2.0 - 16.0) * (70.0 / 10.8);
+					else if (b >= 13.4 && b < 16.0) longStickInputForce = longStickInputForce + 70.0 + (b * 2.0 - 26.8) * (110.0 / 5.2);
+					else if (b >= 16.0) longStickInputForce = longStickInputForce + 180.0 + (b * 2.0 - 32.0) * (180.0 / 8.0);
+				}
 			}
+
+			//LJQC: Auto Trim Hack
+
+			if (TVC == FALSE && airspeed_KTS < 260) pitchtrim = 0.068 * airspeed_KTS * airspeed_KTS - 43.34 * airspeed_KTS + 7058;
+			else if (TVC == FALSE && airspeed_KTS >= 260 && airspeed_KTS < 270) pitchtrim = -55.0 * airspeed_KTS + 14709;
+			else if (TVC == FALSE && airspeed_KTS >= 270 && airspeed_KTS < 600) pitchtrim = 0.015 * airspeed_KTS * airspeed_KTS - 14.78 * airspeed_KTS + 2550;
+			else if (TVC == FALSE && airspeed_KTS >= 600) pitchtrim = -1533;
+			else pitchtrim = 0;
+			longStickInputForce = longStickInputForce + pitchtrim / 50.0;
+
+
 			longStickInputForce = limit(longStickInputForce, -180.0, 180.0);
 			longStickForce = longStickInputForce;
 
@@ -1059,7 +1114,7 @@ namespace F16
 		double fcs_pitch_controller(double longStickInput, double pitchTrim, double angle_of_attack_ind, double pitch_rate, double az, double differentialCommand, double dynPressure_LBFT2, double dt)
 		{
 			gload = az + 1; //double
-			Gs = floor(gload * 10.0f + 0.5) / 10.0f;
+			Gs = floor(gload * 1000.0f + 0.5) / 1000.0f;
 			//pitchrate = pitch_rate;
 			if (!(simInitialized))
 			{
@@ -1207,7 +1262,17 @@ namespace F16
 
 			if (GetAsyncKeyState(0x54) & 1) TVC = !TVC;
 
-			//pitchinput = finalPitchCommandTotal;
+			if (GetAsyncKeyState(0x4D) & 1) HMCS = !HMCS;
+
+			if (GetAsyncKeyState(0x43) & 1) CATI = !CATI;
+
+			//HMCS position debug:
+			if (GetAsyncKeyState(VK_UP) & 1) displayY = displayY - 1;
+			if (GetAsyncKeyState(VK_DOWN) & 1) displayY = displayY + 1;
+			if (GetAsyncKeyState(VK_LEFT) & 1) displayX = displayX - 1;
+			if (GetAsyncKeyState(VK_RIGHT) & 1) displayX = displayX + 1;
+
+			dele = finalPitchCommandTotal;
 
 
 			//LJQC: MPO fuctions here:=====================================================================================================
