@@ -150,6 +150,10 @@ namespace F16
 	double      num9 = 0.0;
 	double      num10 = 0.0;
 	double      num11 = 0.0;
+	double      quaternionx = 0.0;
+	double      quaterniony = 0.0;
+	double      quaternionz = 0.0;
+	double      quaternionw = 0.0;
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -450,6 +454,11 @@ void ed_fm_set_current_state (double ax,//linear acceleration component in world
 	F16::getAccelx = F16::FlightControls.getnumber5(ax);
 	
 	F16::num9 = F16::FlightControls.getnumber9(vy);
+
+	
+	F16::quaterniony = F16::FlightControls.getquaterniony(quaternion_y);//For heading calculation
+	F16::quaternionz = F16::FlightControls.getquaternionz(quaternion_z);
+	
 }
 
 void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration component in body coordinate system (meters/sec^2)
@@ -477,8 +486,12 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
 	F16::Atmos.setAirspeed(vx, vy, vz, wind_vx, wind_vy, wind_vz);
 	F16::getpAccelx = F16::FlightControls.getnumber6(ax);
 	F16::num10 = F16::FlightControls.getnumber10(ay);
-	F16::num7 = F16::FlightControls.getnumber7(az);
-	F16::num8 = F16::FlightControls.getnumber8(vz);
+	//F16::num7 = F16::FlightControls.getnumber7(az);
+	F16::quaternionw = F16::FlightControls.getquaternionw(roll);
+	F16::quaternionx = F16::FlightControls.getquaternionx(yaw);
+	
+	double tanpitch = (F16::num9 - wind_vy) / (vx - wind_vx);
+	F16::num8 = F16::FlightControls.getnumber8(tanpitch);
 	//-------------------------------
 	// Start of setting F-16 states
 	//-------------------------------

@@ -216,7 +216,7 @@ namespace F16
 			delta_mass_moment_of_inertia_z = F16::inertia_Iz_KGM2 - inertia.z;
 
 			// TODO: decrement this delta from inertia now?
-			fuel_mass_delta = 0;
+			fuel_mass_delta = -1000;
 		}
 
 		//----------------------------------------------------------------
