@@ -53,6 +53,9 @@ namespace F16
 	// -> adapt to support either one?
 	// Turbine inlet temperature: 1,350 °C (2,460 °F)
 
+	double thrustTmp = 0.0;
+	double Tmil;
+	double Tmax;
 
 	class F16Engine
 	{
@@ -65,7 +68,8 @@ namespace F16
 
 		double percentPower;
 		double afterburner;
-
+		
+		
 
 		// amount of fuel used in this engine setting in current flight conditions (temperature, airspeed..)
 		double fuelPerFrame;
@@ -254,7 +258,7 @@ namespace F16
 		}
 		else
 		{
-			percentPower = throttleInput *4.5455 - 354.55;
+			percentPower = 54.0 + throttleInput *4.5455 - 354.55;//LJQC: Fix for power curve
 		}
 		percentPower = limit(percentPower,0.0,100.0);
 
@@ -316,12 +320,11 @@ namespace F16
 		double altTemp = (alt/55000.0);
 		double altTemp2 = (alt/50000.0);
 
-		double machLimited = limit(mach,0.2,1.0);
+		double machLimited = limit(mach,0.2,1.45);
 		double Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
-		double Tmil = (-25958.0 * pow(machLimited,3.0) + 34336.0 * pow(machLimited,2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0);
-		double Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
+		Tmil = (-25958.0 * pow(machLimited,3.0) + 34336.0 * pow(machLimited,2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0);
+		Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
 
-		double thrustTmp = 0.0;
 		if(m_power3 < 50.0)
 		{
 			thrustTmp = Tidle + (Tmil-Tidle)*(m_power3/50.0);

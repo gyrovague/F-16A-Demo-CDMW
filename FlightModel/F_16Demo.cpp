@@ -154,6 +154,7 @@ namespace F16
 	double      quaterniony = 0.0;
 	double      quaternionz = 0.0;
 	double      quaternionw = 0.0;
+	double      dele = 0.0;
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -272,6 +273,10 @@ void ed_fm_simulate(double dt)
 	// use RPM for now 
 	// TODO: switch to torque if/when necessary/available
 	F16::Hydraulics.updateFrame(F16::Engine.getEngineRpm(), frametime);
+
+	F16::quaterniony = F16::FlightControls.getquaterniony(F16::Engine.getEngineRpm());//For heading calculation
+	//F16::quaternionz = F16::FlightControls.getquaternionz(F16::Engine.getThrustMilandMaxAB2());
+	//F16::dele = F16::FlightControls.getdele(F16::Engine.getThrustMilandMaxAB3());
 
 	F16::Electrics.updateFrame(frametime);
 	F16::Airframe.updateFrame(frametime);
@@ -456,8 +461,7 @@ void ed_fm_set_current_state (double ax,//linear acceleration component in world
 	F16::num9 = F16::FlightControls.getnumber9(vy);
 
 	
-	F16::quaterniony = F16::FlightControls.getquaterniony(quaternion_y);//For heading calculation
-	F16::quaternionz = F16::FlightControls.getquaternionz(quaternion_z);
+	
 	
 }
 
