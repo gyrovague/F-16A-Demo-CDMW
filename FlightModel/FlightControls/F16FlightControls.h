@@ -14,7 +14,7 @@
 
 
 bool        ladder = TRUE;
-double      dele;//LJQC: Elevator deflection for debug use
+int         dele;//LJQC: Elevator deflection for debug use
 bool        HMCS = TRUE;//LJQC: Turn ON/OFF HMCS
 bool        CATI = TRUE;//LJQC: CAT I/III Swtich
 int         a = 0; //LJQC: display KTAS on HMCS
@@ -43,8 +43,10 @@ double      pAccelx;//ax
 double      airspeed_KTS;//LJQC: TAS for calculation
 double      proc5;//LJQC: IAS for calculation
 int         Height;//Height for HMCS display
-int         Sideforce;//Sideforce for HMCS display
-
+double         Sideforce;//Sideforce for EEGS calculation
+double      rollrate;//rollrate for EEGS calculation
+double      pitchrate;//pitchrate for EEGS calculation
+double      yawrate;//pitchrate for EEGS calculation
 
 
 
@@ -62,12 +64,12 @@ double pitchangleminus80;
 double      num7 = 0.0;//Bank angle
 double      num8 = 0.0;//=tan(pitch angle)
 double      num9 = 0.0;//LJQC: Vertical Velocity (m/s)
-double      num10 = 0.0;//ay in body system
+double      num10 = 0.0;//LJQC: ay (az actually) in body system
 double      num11 = 0.0;//LJQC: Ground Object Height
 
 double quaternionx = 0.0; //LJQC: Heading of Aircraft in rad
 double quaterniony = 0.0; //LJQC: Engine RPM
-double quaternionz = 0.0; //LJQC: Engine Thrust
+bool quaternionz = FALSE; //LJQC: landingear state
 double quaternionw = 0.0;//LJQC: Bank angle in rad
 double bankangle = 0.0;
 double heading = 0.0; //LJQC: Heading of Aircraft in deg
@@ -80,9 +82,12 @@ double         ALTast = 0.0;
 //Trim function:
 double         pitchtrim = 0.0;
 
-//HMCS position debug
-double         displayX = 0.0;
-double         displayY = 0.0;
+//for HMCS debug
+double         displayX = -1.0;
+double         displayY = 1.0;
+double         displayZ = 1.0;
+double         displayW = 1.0;
+double         displayC = 1.0;
 
 //For clock display:
 double c1 = 30.0 / 180.0 * M_PI;
@@ -442,6 +447,12 @@ int Render()
 
 		//LJQC: Misc Indications================================================================================
 
+
+		RECT g_CATPosition = { 0, 0, 1860, 1064 - 30 };
+		if (CATI == TRUE && TVC == FALSE) pFont->DrawText(NULL, L"CAT I", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		else if (CATI == FALSE && TVC == FALSE) pFont->DrawText(NULL, L"CAT III", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+
 		if (TVC == TRUE)
 		{
 			RECT g_TVCPosition = { 0, 0, 1860, 1064 - 30 };//LJQC: TVC符号
@@ -458,6 +469,12 @@ int Render()
 		{
 			RECT g_GLIMPosition = { 0, 0, 1860, 1144 - 30 };
 			pFont->DrawText(NULL, L"G-LIM OVRD", -1, &g_GLIMPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		}
+
+		if (dele == 1) //LJQC: Speed Brake Display
+		{
+			RECT g_UFOPosition = { 0, 0, 1860, 1184 - 30 };
+			pFont->DrawText(NULL, L"SPD BRK", -1, &g_UFOPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 		
 
@@ -496,37 +513,81 @@ int Render()
 
 		//LJQC: Values for debug only===================================================================================
 		/*
-		RECT g_PITCHtrimsvaluePosition = { 0, 0, 850, 854 };
-		std::ostringstream s19(quaterniony);
-		s19 << quaterniony;
+		RECT g_PITCHtrimsvaluePosition = { 0, 0, 850, 800 };
+		std::ostringstream s19(displayX);
+		s19 << displayX;
 		pFont->DrawTextA(NULL, s19.str().c_str(), -1, &g_PITCHtrimsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_PITCHoutputsvaluePosition = { 0, 0, 850, 804 };
-		std::ostringstream s20(quaternionz);
-		s20 << quaternionz;
+		RECT g_PITCHoutputsvaluePosition = { 0, 0, 850, 840 };
+		std::ostringstream s20(displayY);
+		s20 << displayY;
 		pFont->DrawTextA(NULL, s20.str().c_str(), -1, &g_PITCHoutputsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		
-		RECT g_zzvaluePosition = { 0, 0, 850, 904 };
-		std::ostringstream s21(displayX);
-		s21 << displayX;
+		RECT g_zzvaluePosition = { 0, 0, 850, 880 };
+		std::ostringstream s21(displayZ);
+		s21 << displayZ;
 		pFont->DrawTextA(NULL, s21.str().c_str(), -1, &g_zzvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_wwvaluePosition = { 0, 0, 850, 954 };
-		std::ostringstream s22(displayY);
-		s22 << displayY;
+		RECT g_wwvaluePosition = { 0, 0, 850, 920 };
+		std::ostringstream s22(displayW);
+		s22 << displayW;
 		pFont->DrawTextA(NULL, s22.str().c_str(), -1, &g_wwvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_value444Position = { 0, 0, 850, 1004 };
-		std::ostringstream s444(dele);
-		s444 << dele;
+		
+		RECT g_value444Position = { 0, 0, 850, 960 };
+		std::ostringstream s444(displayC);
+		s444 << displayC;
 		pFont->DrawTextA(NULL, s444.str().c_str(), -1, &g_value444Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		*/
+		/*
+		RECT g_value445Position = { 0, 0, 850, 1000 };
+		std::ostringstream s445(pitchrate);
+		s445 << pitchrate;
+		pFont->DrawTextA(NULL, s445.str().c_str(), -1, &g_value445Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_value446Position = { 0, 0, 850, 1040 };
+		std::ostringstream s446(rollrate);
+		s446 << rollrate;
+		pFont->DrawTextA(NULL, s446.str().c_str(), -1, &g_value446Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		RECT g_value447Position = { 0, 0, 850, 1080 };
+		std::ostringstream s447(yawrate);
+		s447 << yawrate;
+		pFont->DrawTextA(NULL, s447.str().c_str(), -1, &g_value447Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		*/
 
 
+		//LJQC: Gun sight display===================================================================================================================
 
-		RECT g_CATPosition = { 0, 0, 1860, 1064 - 30 };//CAT I/III display==============================================================================================
-		if (CATI == TRUE && TVC == FALSE) pFont->DrawText(NULL, L"CAT I", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
-		else if (CATI == FALSE && TVC == FALSE) pFont->DrawText(NULL, L"CAT III", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		double gunsightX = (displayX * Sideforce * 10.0 + displayY * rollrate / 10.0 + displayZ * yawrate * 5.0);
+		double gunsightY = (displayW * pitchrate * 2.0 + displayC * num10 * 2.0);
+
+		if (ladder == FALSE)
+		{
+			//Left Line
+			DrawLine(1300 / 2.0, 764 / 2.0, (1330 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, 132, 251, 169, 255);
+			DrawLine((1330 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, (1340 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, 132, 251, 169, 255);
+			DrawLine((1340 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, (1345 + 1.6 * (-0.9 * Sideforce * 10.0 + 12.4 * rollrate / 10.0 - 1.8 * yawrate * 5.0)) / 2.0, (764 + 1.6 * (-0.2 * pitchrate * 2.0 + 1.9 * num10 * 2.0)) / 2.0, 132, 251, 169, 255);
+
+			//Right Line
+			DrawLine(1400 / 2.0, 764 / 2.0, (1370 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, 132, 251, 169, 255);
+			DrawLine((1370 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, (1360 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, 132, 251, 169, 255);
+			DrawLine((1360 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, (1355 + 1.6 * (-0.9 * Sideforce * 10.0 + 12.4 * rollrate / 10.0 - 1.8 * yawrate * 5.0)) / 2.0, (764 + 1.6 * (-0.2 * pitchrate * 2.0 + 1.9 * num10 * 2.0)) / 2.0, 132, 251, 169, 255);
+
+			//Aiming dot 1
+			RECT g_dot1Position = { 0, 0, (1350 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 1.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 1.0 };
+			pFont->DrawText(NULL, L"•", -1, &g_dot1Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+			//Aiming dot 2
+			RECT g_dot2Position = { 0, 0, (1350 + 1.0 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 1.0, (764 + 1.0 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 1.0 };
+			pFont->DrawText(NULL, L"•", -1, &g_dot2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		}
+
+
+		//DrawLine((1350 + 0.8 * (-42.7 * Sideforce * 10.0 + 3.0 * rollrate / 10.0)) / 2.0, (764 + 0.8 * (2.9 * num10 * 5.0 - 2.5 * pitchrate * 2.0)) / 2.0, (1350 + 1.2 * gunsightX) / 2.0, (764 + 1.2 * gunsightY) / 2.0, 132, 251, 169, 255);
+
+
 		
 		//LJQC: Altitude display =================================================================================================
 
@@ -643,6 +704,7 @@ int Render()
 
 
 
+
 		//LJQC: Heading Display============================================================================================
 
 		heading = 360.0 - quaternionx * F16::radiansToDegrees;
@@ -680,6 +742,8 @@ int Render()
 				RECT g_DeltasymbolNPosition = { 0, 0, 1350 + North*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 			
+				if (headingmodifier2 >= 360) headingmodifier2 -= 360;
+				else if (headingmodifier2 < 0) headingmodifier2 += 360;
 
 				RECT g_DeltasymbolN2Position = { 0, 0, 1350 + North*3.0, 364 + 105 };
 				std::ostringstream s553(headingmodifier2);
@@ -692,6 +756,9 @@ int Render()
 			{
 				RECT g_DeltasymbolEPosition = { 0, 0, 1350 + East*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolEPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+				if (headingmodifier3 >= 360) headingmodifier3 -= 360;
+				else if (headingmodifier3 < 0) headingmodifier3 += 360;
 
 				RECT g_DeltasymbolE2Position = { 0, 0, 1350 + East*3.0, 364 + 105 };
 				std::ostringstream s554(headingmodifier3);
@@ -706,6 +773,9 @@ int Render()
 				RECT g_DeltasymbolSPosition = { 0, 0, 1350 + South*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolSPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
+				if (headingmodifier4 >= 360) headingmodifier4 -= 360;
+				else if (headingmodifier4 < 0) headingmodifier4 += 360;
+
 				RECT g_DeltasymbolS2Position = { 0, 0, 1350 + South*3.0, 364 + 105 };
 				std::ostringstream s555(headingmodifier4);
 				s555 << headingmodifier4;
@@ -718,6 +788,9 @@ int Render()
 				//4
 				RECT g_DeltasymbolWPosition = { 0, 0, 1350 + West*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolWPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+				if (headingmodifier5 >= 360) headingmodifier5 -= 360;
+				else if (headingmodifier5 < 0) headingmodifier5 += 360;
 
 				RECT g_DeltasymbolW2Position = { 0, 0, 1350 + West*3.0, 364 + 105 };
 				std::ostringstream s556(headingmodifier5);
@@ -732,6 +805,9 @@ int Render()
 				RECT g_DeltasymbolNPosition2 = { 0, 0, 1350 + Close1*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition2, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
+				if (headingmodifier >= 360) headingmodifier -= 360;
+				else if (headingmodifier < 0) headingmodifier += 360;
+
 				RECT g_DeltasymbolN2Position2 = { 0, 0, 1350 + Close1*3.0, 364 + 105 };
 				std::ostringstream s557(headingmodifier);
 				s557 << headingmodifier;
@@ -744,6 +820,9 @@ int Render()
 				RECT g_DeltasymbolNPosition3 = { 0, 0, 1350 + Close2*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition3, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
+				if (headingmodifier6 >= 360) headingmodifier6 -= 360;
+				else if (headingmodifier6 < 0) headingmodifier6 += 360;
+
 				RECT g_DeltasymbolN2Position4 = { 0, 0, 1350 + Close2*3.0, 364 + 105 };
 				std::ostringstream s558(headingmodifier6);
 				s558 << headingmodifier6;
@@ -755,6 +834,9 @@ int Render()
 				//5
 				RECT g_DeltasymbolNPosition5 = { 0, 0, 1350 + Close3*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition5, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+				if (headingmodifier7 >= 360) headingmodifier7 -= 360;
+				else if (headingmodifier7 < 0) headingmodifier7 += 360;
 
 				RECT g_DeltasymbolN2Position6 = { 0, 0, 1350 + Close3*3.0, 364 + 105 };
 				std::ostringstream s559(headingmodifier7);
@@ -772,9 +854,19 @@ int Render()
 		pFont->DrawText(NULL, L"-", -1, &g_FPM2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		RECT g_FPM3Position = { 0, 0, 1365 + Beta * 25.0, 760 + b * 25.0 }; 
 		pFont->DrawText(NULL, L"-", -1, &g_FPM3Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+
+		//LJQC: AOA Bracket display===============================================================================================
 		
+		double alphaa = (b - 13.0)*20.0;
 
+		if (quaternionz == TRUE)
+		{
+			DrawLine((1310 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0, (1310 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
+			DrawLine((1310 + Beta * 25.0) / 2.0, (760 + b * 25.0 + alphaa) / 2.0, (1330 + Beta * 25.0) / 2.0, (760 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
 
+			DrawLine((1310 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0, (1330 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
+			DrawLine((1310 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0, (1330 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
+		}
 
 		num7 = (quaternionw * F16::radiansToDegrees) / 9.0; // = (Bank angle / 9.0)
 
@@ -1212,7 +1304,7 @@ namespace F16
 		}
 		void setAirbrakeOFF()
 		{
-			//airbrake = value;
+			//airbrake = 1;
 			airbrakeExtended = false;
 		}
 		void switchAirbrake()
@@ -1222,11 +1314,14 @@ namespace F16
 
 		float getAirbrake()
 		{
-			if (airbrakeExtended == true)
+			if (dele == 1)
 			{
 				return 1.0;
 			}
-			return 0.0;
+			else if (dele == 0)
+			{
+				return 0.0;
+			}
 		}
 
 		//protected:
@@ -1256,7 +1351,7 @@ namespace F16
 		// Controller for yaw
 		double fcs_yaw_controller(double pedInput, double pedTrim, double yaw_rate, double roll_rate, double aoa_filtered, double aileron_commanded, double ay, double dt)
 		{
-			//yawrate = yaw_rate;
+			yawrate = yaw_rate;
 			if (!(simInitialized))
 			{
 				double numerators[2] = { 0.0, 4.0 };
@@ -1323,7 +1418,7 @@ namespace F16
 			//return yawServoCommand;
 		}
 
-		double fcs_flap_controller(double airspeed_FPS) //LJQC: FLAPS will deploy when ALT Flaps Switch is ON.=====================================
+		double fcs_flap_controller(double airspeed_FPS) //LJQC: FLAPS will deploy when ALT Flaps Switch is ON or when Landing Gear is down.=====================================
 		{
 			airspeed_KTS = 0.5924838012958964 * airspeed_FPS;
 			double trailing_edge_flap_deflection = 0.0;
@@ -1332,14 +1427,29 @@ namespace F16
 			if (proc5 < 240.0)
 			{
 				Speedlevel = 1;
-				if (ALTflaps == 1) trailing_edge_flap_deflection = 20.0;
-				else trailing_edge_flap_deflection = 0;
+				if (quaternionz == FALSE)
+				{
+					if (ALTflaps == 1) trailing_edge_flap_deflection = 20.0;
+					else trailing_edge_flap_deflection = 0;
+				}
+				else if (quaternionz == TRUE)
+				{
+					trailing_edge_flap_deflection = 20.0;
+				}
 			}
 			else if ((proc5 >= 240.0) && (proc5 <= 370.0))
 			{
 				Speedlevel = 2;
-				if (ALTflaps == 1) trailing_edge_flap_deflection = (1.0 - ((proc5 - 240.0) / (370.0 - 240.0))) * 20.0;
-				else trailing_edge_flap_deflection = 0;
+
+				if (quaternionz == FALSE)
+				{
+					if (ALTflaps == 1) trailing_edge_flap_deflection = (1.0 - ((proc5 - 240.0) / (370.0 - 240.0))) * 20.0;
+					else trailing_edge_flap_deflection = 0;
+				}
+				else if (quaternionz == TRUE)
+				{
+					trailing_edge_flap_deflection = 20.0;
+				}
 			}
 			else if ((proc5 > 370.0) && (proc5 <= 600.0))
 			{
@@ -1433,7 +1543,7 @@ namespace F16
 			return quaterniony;
 		}
 
-		double getquaternionz(double quaternion_z)
+		bool getquaternionz(bool quaternion_z)
 		{
 			quaternionz = quaternion_z;
 			return quaternionz;
@@ -1445,7 +1555,7 @@ namespace F16
 			return quaternionw;
 		}
 
-		double getdele(double de)
+		int getdele(int de)
 		{
 			dele = de;
 			return dele;
@@ -1575,7 +1685,7 @@ namespace F16
 		{
 			gload = az + 1; //double
 			Gs = floor(gload * 10.0f + 0.5) / 10.0f;
-			//pitchrate = pitch_rate;
+			pitchrate = pitch_rate;
 			if (!(simInitialized))
 			{
 				double numerators[2] = { 1.0, 0.0 };
@@ -1729,10 +1839,16 @@ namespace F16
 			if (GetAsyncKeyState(0x50) & 1) ladder = !ladder;
 
 			//HMCS position debug:
-			if (GetAsyncKeyState(VK_UP) & 1) displayY = displayY - 1;
-			if (GetAsyncKeyState(VK_DOWN) & 1) displayY = displayY + 1;
-			if (GetAsyncKeyState(VK_LEFT) & 1) displayX = displayX - 1;
-			if (GetAsyncKeyState(VK_RIGHT) & 1) displayX = displayX + 1;
+			if (GetAsyncKeyState(VK_UP) & 1) displayY = displayY + 0.1;
+			if (GetAsyncKeyState(VK_DOWN) & 1) displayY = displayY - 0.1;
+			if (GetAsyncKeyState(VK_LEFT) & 1) displayX = displayX - 0.1;
+			if (GetAsyncKeyState(VK_RIGHT) & 1) displayX = displayX + 0.1;
+			if (GetAsyncKeyState(0x21) & 1) displayZ +=  0.1;
+			if (GetAsyncKeyState(0x22) & 1) displayZ -=  0.1;
+			//if (GetAsyncKeyState(VK_OEM_COMMA) & 1) displayW += 0.1;
+			//if (GetAsyncKeyState(VK_OEM_PERIOD) & 1) displayW -= 0.1;
+			if (GetAsyncKeyState(0x76) & 1) displayC += 0.1;
+			if (GetAsyncKeyState(0x74) & 1) displayC -= 0.1;
 
 			//dele = finalPitchCommandTotal;
 
@@ -1806,7 +1922,8 @@ namespace F16
 		// Controller for roll
 		double fcs_roll_controller(double latStickInput, double longStickForce, double ay, double roll_rate, double roll_rate_trim, double dynPressure_LBFT2, double dt)
 		{
-			//rollrate = roll_rate;
+			rollrate = roll_rate;
+			Sideforce = ay;
 			if (!(simInitialized))
 			{
 				double numerators[2] = { 0.0, 60.0 };

@@ -49,6 +49,7 @@ namespace F16
 		Vec3 actingForce;
 		Vec3 actingForcePoint;
 		double integrityFactor;
+		bool Gearr = FALSE;
 
 		F16LandingWheel(const double wheelRadius) 
 			//: rolling_friction(0.03)
@@ -72,40 +73,47 @@ namespace F16
 		{}
 		~F16LandingWheel() {}
 
+
 		bool isWoW() const
 		{
-			if (strutCompression > 0)
+			if (Gearr == TRUE)
 			{
 				return true;
 			}
-			return false;
+			else return false;
 		}
+
+		
 
 		void wheelBrake()
 		{
-			if (strutCompression == 0)
+			if (Gearr == FALSE)
 			{
 				// no weight on wheels?
 				brakeForce = 0;
 				return;
 			}
-			/*
-			if (brakeInput <= 0)
+			else
 			{
+
+				/*
+				if (brakeInput <= 0)
+				{
 				return;
+				}
+				*/
+
+				// TODO: find out some reasonable values,
+				// do we need to have brake fading support as well?
+				// TODO: also switch calculation to reduction in kinectic energy in motion handling
+				// -> should calculate proper moment here
+				brakeForce = 9000; // guess, find out reasonable value for this!!
+				brakeForce = limit(brakeForce, 0, wheel_brake_moment_max);
+
+				// just add it to rolling friction
+				//CxWheelFriction += (wheel_roll_friction_factor * brakeFriction * weightN);
+				//CyWheelFriction = 0.18 * weightN;
 			}
-			*/
-
-			// TODO: find out some reasonable values,
-			// do we need to have brake fading support as well?
-			// TODO: also switch calculation to reduction in kinectic energy in motion handling
-			// -> should calculate proper moment here
-			brakeForce = abs(brakeInput) * 5000; // guess, find out reasonable value for this!!
-			brakeForce = limit(brakeForce, 0, wheel_brake_moment_max);
-
-			// just add it to rolling friction
-			//CxWheelFriction += (rolling_friction * brakeFriction * weightN);
-			//CyWheelFriction = 0.18 * weightN;
 		}
 
 		void setActingForce(double x, double y, double z)
@@ -142,12 +150,15 @@ namespace F16
 		{
 			// TODO: also if wheel rotation is slower than speed relative to ground
 			// -> apply sliding friction factor
+			if (GetAsyncKeyState(0x51) & 0x8000) Gearr = TRUE;
+			else Gearr = FALSE;
 
-			if (isWoW() == true && groundSpeed > 0)
+			if (Gearr == TRUE)//groundSpeed > 0
 			{
 				// TODO: amount of weight per wheel instead?
 				// also weight balance? wheel size?
 				// TODO: nose-gear steering angle etc.
+				
 				CxWheelFriction = (-wheel_roll_friction_factor * weightN);
 
 				// should have wheel_side_friction_factor ?
@@ -164,8 +175,8 @@ namespace F16
 			else
 			{
 				// no weight on wheels
-				CxWheelFriction = 0.0;
-				CyWheelFriction = 0.0;
+				CxWheelFriction = 0;
+				CyWheelFriction = 0;
 			}
 		}
 	};

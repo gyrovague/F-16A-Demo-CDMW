@@ -41,8 +41,8 @@ namespace F16
 		void updateFrame(const double ambientPressure, const double altitude, const double frameTime)
 		{
 			// very rough usage
-			double use = frameTime * diluter_setting;
-			tank_usage -= use;
+			double use = 0;//frameTime * diluter_setting;
+			tank_usage = 0;//-=use
 			//tanks += o2_gen;
 
 			// pressure provided depends on diluter setting

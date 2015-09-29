@@ -152,9 +152,13 @@ namespace F16
 	double      num11 = 0.0;
 	double      quaternionx = 0.0;
 	double      quaterniony = 0.0;
-	double      quaternionz = 0.0;
+	bool        quaternionz = FALSE;
 	double      quaternionw = 0.0;
-	double      dele = 0.0;
+	int         dele = 0;
+	bool        geardown = FALSE;
+	bool        canopy = TRUE;
+	bool        geardown2 = FALSE;
+
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -240,6 +244,7 @@ bool ed_fm_add_global_moment_component (double & x,double &y,double &z)
 clock_t end_tick(0);
 void ed_fm_simulate(double dt)
 {
+	
 	clock_t start_tick = clock();
 	double frametime = dt; // initialize only
 	if (end_tick > 0)
@@ -268,15 +273,15 @@ void ed_fm_simulate(double dt)
 	F16::Fuel.updateFrame(F16::Engine.getFuelPerFrame(), frametime);
 
 	// update oxygen provided to pilot: tanks, bleed air from engine etc.
-	F16::Oxygen.updateFrame(F16::Atmos.ps_LBFT2, F16::Atmos.altitude_FT, frametime);
+	F16::Oxygen.updateFrame(F16::Atmos.ps_LBFT2 / 10.0, F16::Atmos.altitude_FT / 10.0, frametime);
 
 	// use RPM for now 
 	// TODO: switch to torque if/when necessary/available
 	F16::Hydraulics.updateFrame(F16::Engine.getEngineRpm(), frametime);
 
 	F16::quaterniony = F16::FlightControls.getquaterniony(F16::Engine.getEngineRpm());//For heading calculation
-	//F16::quaternionz = F16::FlightControls.getquaternionz(F16::Engine.getThrustMilandMaxAB2());
-	//F16::dele = F16::FlightControls.getdele(F16::Engine.getThrustMilandMaxAB3());
+	
+	F16::dele = F16::FlightControls.getdele(F16::Engine.getUFOstate());
 
 	F16::Electrics.updateFrame(frametime);
 	F16::Airframe.updateFrame(frametime);
@@ -363,7 +368,10 @@ void ed_fm_simulate(double dt)
 									*/
 		// use free-rolling friction as single unit for now
 		// TODO: nose-wheel steering, braking forces etc.
-		F16::Motion.updateNoseWheelTurn(F16::LandingGear.getNoseTurnDirection(), F16::LandingGear.getNosegearAngle());
+
+		if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000) F16::Motion.updateNoseWheelTurn(Vec3(cos(32.0 / 180.0*M_PI), cos(32.0 / 180.0*M_PI), cos(32.0 / 180.0*M_PI)), 32.0);
+		else if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000) F16::Motion.updateNoseWheelTurn(Vec3(cos(-32.0 / 180.0 * M_PI), cos(-32.0 / 180.0*M_PI), cos(-32.0 / 180.0 * M_PI)), -32.0);
+		else F16::Motion.updateNoseWheelTurn(Vec3(cos(0 / 180.0 * M_PI), 0, cos(0 / 180.0 * M_PI)), 0.0);
 
 		// combined rolling friction currently, not per-wheel as it should perhaps..
 		F16::Motion.updateRollingFriction(F16::LandingGear.CxRollingFriction, F16::LandingGear.CyRollingFriction);
@@ -461,8 +469,18 @@ void ed_fm_set_current_state (double ax,//linear acceleration component in world
 	F16::num9 = F16::FlightControls.getnumber9(vy);
 
 	
+	if (GetAsyncKeyState(0x47) & 1) F16::geardown = !F16::geardown;
+	if (GetAsyncKeyState(0x56) & 1) F16::canopy = !F16::canopy;
 	
-	
+	if (F16::geardown == TRUE) F16::LandingGear.setGearDown();
+	else if (F16::geardown == FALSE) F16::LandingGear.setGearUp();
+
+	F16::quaternionz = F16::FlightControls.getquaternionz(F16::geardown);
+
+	F16::geardown2 = F16::Engine.getCstate(F16::canopy);
+
+	if (F16::canopy == TRUE) F16::Airframe.setCanopyClosed();
+	else if (F16::canopy == FALSE) F16::Airframe.setCanopyGone();
 }
 
 void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration component in body coordinate system (meters/sec^2)
@@ -788,7 +806,6 @@ void ed_fm_set_draw_args(EdDrawArgument * drawargs, size_t size)
 	//Nose Gear Steering
 	// note: not active animation on the 3D model right now
 	drawargs[2].f = F16::LandingGear.getNosegearTurn(); // nose gear turn angle {-1=CW max;1=CCW max}
-
 	// right gear
 	drawargs[3].f = (float)F16::LandingGear.getRightGearDown(); // gear angle {0;1}
 	drawargs[4].f = (float)F16::LandingGear.wheelRight.getStrutCompression(); // strut compression {0;0.5;1}
@@ -988,8 +1005,8 @@ double ed_fm_get_param(unsigned param_enum)
 	case ED_FM_SUSPENSION_2_WHEEL_SELF_ATTITUDE:
 		return 0;
 
-	case ED_FM_OXYGEN_SUPPLY: // oxygen provided from on board oxygen system, pressure - pascal
-		return F16::Oxygen.getPressure();
+	//case ED_FM_OXYGEN_SUPPLY: // oxygen provided from on board oxygen system, pressure - pascal
+		//return F16::Oxygen.getPressure();
 	case ED_FM_FLOW_VELOCITY:
 		return 0;
 

@@ -31,7 +31,7 @@ namespace F16
 
 	public:
 		double gearDownAngle;	// Is the gear currently down? (If not, what angle is it?)
-
+		bool   geardownornot;
 		bool nosewheelSteering; // is active/not
 		double noseGearTurnAngle; // steering angle {-1=CW max;1=CCW max}
 
@@ -90,47 +90,37 @@ namespace F16
 		void setWheelBrakeLeft(double value)
 		{
 			// 0..1 from input
-			wheelLeft.brakeInput = value;
+			if (GetAsyncKeyState(0x57) & 0x8000) wheelLeft.brakeInput = 1;
+			else wheelLeft.brakeInput = 0;
 		}
 		// joystick axis
 		void setWheelBrakeRight(double value)
 		{
 			// 0..1 from input
-			wheelRight.brakeInput = value;
+			if (GetAsyncKeyState(0x57) & 0x8000) wheelRight.brakeInput = 1;
+			else  wheelRight.brakeInput = 0;
 		}
 
 		// key press DOWN
 		void setWheelBrakesON()
 		{
-			if (GetAsyncKeyState(0x57) & 0x8000)
-			{
 			wheelLeft.brakeInput = 1;
 			wheelRight.brakeInput = 1;
-			}
 		}
 		// key press UP
 		void setWheelBrakesOFF()
 		{
-			if (GetAsyncKeyState(0x57) == 0)
-			{
 			wheelLeft.brakeInput = 0;
 			wheelRight.brakeInput = 0;
-			}
 		}
 
 		void setNosewheelSteeringON()
 		{
-			if (GetAsyncKeyState(0x4B) & 1)
-			{
 				nosewheelSteering = true;
-			}
 		}
 		void setNosewheelSteeringOFF()
 		{
-			if (GetAsyncKeyState(0x4C) & 1)
-			{
 				nosewheelSteering = false;
-			}
 		}
 
 		// TODO: joystick input is usually -100..100
@@ -140,20 +130,20 @@ namespace F16
 		void nosewheelTurn(const double value)
 		{
 			// skip for now until button mapping works for it
-			if (nosewheelSteering == false)
-			{
-				return;
-			}
+			//if (nosewheelSteering == false)
+			//{
+				//return;
+			//}
 			
 			/*if (isWoW() == false)
 			{
 				return;
 			}*/
 			// TODO: check value
-			noseGearTurnAngle = value;
+			noseGearTurnAngle = value * 32.0;
 
 			// for now, just cut input to allowed range in degrees
-			noseGearTurnAngle = limit(value, -32, 32);
+			//noseGearTurnAngle = limit(value, -32, 32);
 		}
 
 		// in case of nose wheel: 
@@ -167,7 +157,7 @@ namespace F16
 
 			return Vec3(x, 0, z); // test!
 
-			Vec3 direction(1, 0, 0); // <- start with aligned to body direction
+			//Vec3 direction(1, 0, 0); // <- start with aligned to body direction
 			// ..vector multiply by radians?
 			// translation matrix?
 			//return direction;
@@ -203,6 +193,7 @@ namespace F16
 		}
 		double getLeftGearDown()
 		{
+			
 			return limit(gearDownAngle, 0, 1);
 		}
 		double getRightGearDown()
@@ -212,11 +203,7 @@ namespace F16
 
 		void switchGearUpDown()
 		{
-			if (GetAsyncKeyState(0x47) & 1)
-			{
-				geardownn = geardownn + 1;
-				if (geardownn > 1) geardownn = 0;
-			}
+
 			if (geardownn == 0)
 			{
 				// down -> up
@@ -228,6 +215,7 @@ namespace F16
 				setGearDown();
 			}
 		}
+		
 		void setGearDown()
 		{
 			gearDownAngle = 1.0;

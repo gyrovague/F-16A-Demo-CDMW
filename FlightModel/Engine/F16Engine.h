@@ -56,6 +56,8 @@ namespace F16
 	double thrustTmp = 0.0;
 	double Tmil;
 	double Tmax;
+	double Tidle;
+	bool UFO = FALSE; //LJQC: Speed Brake Hack
 
 	class F16Engine
 	{
@@ -97,6 +99,7 @@ namespace F16
 		bool stopping; // "spooling down"
 
 		bool isIgnited; // if it is really running or just rotating from airflow? (out of fuel mid-air?)
+		bool Cstate;
 
 		F16Engine() 
 			: m_power3(0)
@@ -176,6 +179,23 @@ namespace F16
 			// ED_FM_ENGINE_1_RELATED_THRUST:
 			return (throttleInput/100.0);
 		}
+		int getUFOstate() const
+		{
+			if (UFO == FALSE)
+			{
+				return 0;
+			}
+			else if (UFO == TRUE)
+			{
+				return 1;
+			}
+		}
+
+		bool getCstate(bool a)
+		{
+			Cstate = a;
+			return Cstate;
+		}
 
 		void startEngine()
 		{
@@ -250,6 +270,7 @@ namespace F16
 			return;
 		}
 		*/
+		if (GetAsyncKeyState(0x42) & 1) UFO = !UFO;
 
 		afterburner = (throttleInput - 80.0) / 20.0;
 		if(throttleInput < 78.0)
@@ -317,24 +338,49 @@ namespace F16
 
 		//From Simulator Study document (use 0 altitude values for now)
 		//TODO: This should really be a look-up table per the document reference but this is sufficient for now...
-		double altTemp = (alt/55000.0);
-		double altTemp2 = (alt/50000.0);
+		double altTemp;
+		double altTemp2;
 
-		double machLimited = limit(mach,0.2,1.45);
-		double Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
-		Tmil = (-25958.0 * pow(machLimited,3.0) + 34336.0 * pow(machLimited,2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0);
-		Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
+		
+		//if (UFO == FALSE)
+		//{
+			altTemp = (alt/55000.0);
+			altTemp2 = (alt/50000.0);
+		//}
+		/*
+		else if (UFO == TRUE)
+		{
+			altTemp = 0.0;
+			altTemp2 = 0.0;
+		}
+		*/
+
+		double machLimited;
+		if (UFO == FALSE) machLimited = limit(mach, 0.2, 1.45);
+		else if (UFO == TRUE) machLimited = limit(mach, 0.2, 0.6);
+
+		if (UFO == FALSE)  Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
+		else if (UFO == TRUE && Cstate == FALSE)  Tidle = -94976.0;
+		else if (UFO == TRUE && Cstate == TRUE)  Tidle = -34976.0;
+
+		if (UFO == FALSE) Tmil = (-25958.0 * pow(machLimited, 3.0) + 34336.0 * pow(machLimited, 2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0);
+		else if (UFO == TRUE) Tmil = (-25958.0 * pow(machLimited, 3.0) + 34336.0 * pow(machLimited, 2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0) - 54976.0;
+
+
+		if (UFO == FALSE) Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
+		else if (UFO == TRUE && Cstate == FALSE) Tmax = (4270200.0 * pow(machLimited, 2.0) + 866100.4 * machLimited + 9275600.0) + (altTemp2 * -100000.0);
+		else if (UFO == TRUE && Cstate == TRUE) Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0) - 10445.0;
 
 		if(m_power3 < 50.0)
 		{
-			thrustTmp = Tidle + (Tmil-Tidle)*(m_power3/50.0);
+			thrustTmp = Tidle + (Tmil - Tidle)*(m_power3 / 50.0);
 		}
 		else
 		{
 			thrustTmp = Tmil + (Tmax-Tmil)*(m_power3 - 50.0)/50.0;
 		}
 
-		thrust_N = limit(thrustTmp, 0.0, 274000.0);
+		thrust_N = limit(thrustTmp, -274000.0, 274000.0);
 
 		// TODO: usage by actual engine ?
 		//fuelPerFrame =  10 * throttleInput * frameTime; //10 kg persecond

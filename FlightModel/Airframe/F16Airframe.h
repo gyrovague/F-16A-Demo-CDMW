@@ -39,6 +39,7 @@ namespace F16
 		bool formationLights;
 		bool landingLights;
 		bool strobeLights;
+		bool Lights = FALSE;
 
 		// TODO:
 		// damage status of section in 0.01 increments
@@ -105,23 +106,28 @@ namespace F16
 		// get cockpit pressure in pascals over external (get update from oxygen system also)
 		double getCockpitPressure() const
 		{
+			
 			return cockpitPressure;
 		}
 
 		float isNavigationLight() const
 		{
+			
 			return (navigationLights == true) ? 1.0f : 0.0f;
 		}
 		float isFormationLight() const
 		{
+			
 			return (formationLights == true) ? 1.0f : 0.0f;
 		}
 		float isLandingLight() const
 		{
+			
 			return (landingLights == true) ? 1.0f : 0.0f;
 		}
 		float isStrobeLight() const
 		{
+			
 			return (strobeLights == true) ? 1.0f : 0.0f;
 		}
 
@@ -185,7 +191,27 @@ namespace F16
 		void updateFrame(const double frameTime)
 		{
 			// TODO: some light switching logic on/off?
-
+			if (GetAsyncKeyState(0x4C) & 1) Lights =! Lights;
+			if (Lights == TRUE)
+			{
+				navigationLights = true;
+				formationLights = true;
+				landingLights = true;
+				strobeLights = true;
+				leftWingLamp = 1;
+				rightWingLamp = 1;
+				backTailLamp = 1;
+			}
+			else if (Lights == FALSE)
+			{
+				navigationLights = false;
+				formationLights = false;
+				landingLights = false;
+				strobeLights = false;
+				leftWingLamp = 0;
+				rightWingLamp = 0;
+				backTailLamp = 0;
+			}
 			// TODO: update cockpit pressure from oxygen system?
 		}
 	};
