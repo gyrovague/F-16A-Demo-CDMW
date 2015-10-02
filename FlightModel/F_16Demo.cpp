@@ -1338,22 +1338,22 @@ void ed_fm_suspension_feedback(int idx,const ed_fm_suspension_info * info)
 	switch (idx)
 	{
 	case 0:
-		F16::LandingGear.wheelNose.setActingForce(info->acting_force[0], info->acting_force[1] * 0.1, info->acting_force[2] * 0.1);
-		F16::LandingGear.wheelNose.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1] * 10.0, info->acting_force_point[2] * 10.0);
+		F16::LandingGear.wheelNose.setActingForce(info->acting_force[0], info->acting_force[1], info->acting_force[2]);
+		F16::LandingGear.wheelNose.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1], info->acting_force_point[2]);
 		F16::LandingGear.wheelNose.setIntegrityFactor(info->integrity_factor);
 		// 0.231
 		F16::LandingGear.wheelNose.setStrutCompression(info->struct_compression);
 		break;
 	case 1:
-		F16::LandingGear.wheelRight.setActingForce(info->acting_force[0], info->acting_force[1] * 0.1, info->acting_force[2] * 0.1);
-		F16::LandingGear.wheelRight.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1] * 10.0, info->acting_force_point[2] * 10.0);
+		F16::LandingGear.wheelRight.setActingForce(info->acting_force[0], info->acting_force[1], info->acting_force[2]);
+		F16::LandingGear.wheelRight.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1], info->acting_force_point[2]);
 		F16::LandingGear.wheelRight.setIntegrityFactor(info->integrity_factor);
 		// 0.750
 		F16::LandingGear.wheelRight.setStrutCompression(info->struct_compression);
 		break;
 	case 2:
-		F16::LandingGear.wheelLeft.setActingForce(info->acting_force[0], info->acting_force[1] * 0.1, info->acting_force[2] * 0.1);
-		F16::LandingGear.wheelLeft.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1] * 10.0, info->acting_force_point[2] * 10.0);
+		F16::LandingGear.wheelLeft.setActingForce(info->acting_force[0], info->acting_force[1], info->acting_force[2]);
+		F16::LandingGear.wheelLeft.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1], info->acting_force_point[2]);
 		F16::LandingGear.wheelLeft.setIntegrityFactor(info->integrity_factor);
 		// 0.750
 		F16::LandingGear.wheelLeft.setStrutCompression(info->struct_compression);

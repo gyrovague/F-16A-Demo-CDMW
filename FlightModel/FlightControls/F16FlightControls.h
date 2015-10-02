@@ -1118,7 +1118,10 @@ DWORD WINAPI InputThread(LPVOID lpParam)
 
 		wchar_t *pString = reinterpret_cast<wchar_t *> (lpParam);
 		RegisterDLLWindowClass(L"A");
-		TargetWnd = FindWindow(L"Digital Combat Simulator", L"Digital Combat Simulator");
+
+		TargetWnd = FindWindow(L"DCS", L"DCS");
+		if (TargetWnd == NULL) TargetWnd = FindWindow(L"Digital Combat Simulator", L"Digital Combat Simulator");
+		//TargetWnd = FindWindow(L"Digital Combat Simulator", L"Digital Combat Simulator");
 		hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"A", L"A", WS_EX_TOPMOST | WS_POPUP, 0, 0, 1366*2.0, 768*2.0, NULL, NULL, NULL, inj_hModule);
 		SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
 		SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
@@ -1135,7 +1138,9 @@ DWORD WINAPI InputThread(LPVOID lpParam)
 					DispatchMessage(&Message);
 				}
 
-				TargetWnd = FindWindow(0, L"Digital Combat Simulator");
+				TargetWnd = FindWindow(0, L"DCS");
+				if (!TargetWnd) TargetWnd = FindWindow(0, L"Digital Combat Simulator");
+				//TargetWnd = FindWindow(0, L"Digital Combat Simulator");
 				GetWindowRect(TargetWnd, &TargetRect);
 				MoveWindow(hWnd, TargetRect.left, TargetRect.top, TargetRect.right - TargetRect.left, TargetRect.bottom - TargetRect.top, true);
 

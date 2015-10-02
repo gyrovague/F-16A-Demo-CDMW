@@ -370,8 +370,8 @@ namespace F16
 		// something like this to handle when nosewheel is turned?
 		void updateNoseWheelTurn(const Vec3 &nosewheelDirection, const double turnAngle)
 		{
-			Vec3 cx_wheel_pos(5.0,0.0,0.0); // TODO: check offset!
-			add_local_force(nosewheelDirection, cx_wheel_pos);
+			//Vec3 cx_wheel_pos(5.0,0.0,0.0); // TODO: check offset!
+			//add_local_force(nosewheelDirection, cx_wheel_pos);
 		}
 
 		// 

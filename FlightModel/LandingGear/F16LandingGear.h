@@ -55,16 +55,16 @@ namespace F16
 
 		F16LandingGear() 
 			: gearDownAngle(0)
-			, nosewheelSteering(true) // <- enable by default until button mapping works
+			, nosewheelSteering(false) // <- enable by default until button mapping works
 			, noseGearTurnAngle(0)
 			, CDGearAero(0)
 			, CzGearAero(0)
 			, CxGearAero(0)
-			, CxRollingFriction(10.0)
+			, CxRollingFriction(0.8)
 			, CyRollingFriction(0)
-			, wheelNose(100.479)
-			, wheelLeft(100.68)
-			, wheelRight(100.68)
+			, wheelNose(10.479)
+			, wheelLeft(0.68)
+			, wheelRight(0.68)
 			, parkingBreakOn(false)
 		{
 		}
@@ -235,9 +235,9 @@ namespace F16
 		{
 			gearAeroDrag();
 
-			wheelNose.updateForceFriction(groundSpeed, weightN * 10.0);
-			wheelLeft.updateForceFriction(groundSpeed, weightN * 10.0);
-			wheelRight.updateForceFriction(groundSpeed, weightN * 10.0);
+			wheelNose.updateForceFriction(groundSpeed, weightN );
+			wheelLeft.updateForceFriction(groundSpeed, weightN );
+			wheelRight.updateForceFriction(groundSpeed, weightN );
 
 			wheelFriction();
 

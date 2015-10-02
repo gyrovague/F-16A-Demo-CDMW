@@ -53,13 +53,13 @@ namespace F16
 		F16LandingWheel(const double wheelRadius) 
 			//: rolling_friction(0.03)
 			: wheel_radius(wheelRadius) // all other same on each wheel? (check)
-			, wheel_static_friction_factor(0.65)
-			, wheel_side_friction_factor(0.065)
-			, wheel_roll_friction_factor(0)
+			, wheel_static_friction_factor(0.065)
+			, wheel_side_friction_factor(0.025)
+			, wheel_roll_friction_factor(0.006)
 			, wheel_glide_friction_factor(0.028)
 			, wheel_damage_force_factor(250.0)
 			, wheel_damage_speed(150.0)
-			, wheel_moment_of_inertia(0) // <- should be different for nose wheel? (smaller wheel)
+			, wheel_moment_of_inertia(0.6) // <- should be different for nose wheel? (smaller wheel)
 			, wheel_brake_moment_max(15000.0)
 			, strutCompression(0)
 			, CxWheelFriction(0)
@@ -114,14 +114,14 @@ namespace F16
 		void setActingForce(double x, double y, double z)
 		{
 			actingForce.x = x;
-			actingForce.y = y * 0.1;
-			actingForce.z = z * 0.1;
+			actingForce.y = y;
+			actingForce.z = z;
 		}
 		void setActingForcePoint(double x, double y, double z)
 		{
 			actingForcePoint.x = x;
-			actingForcePoint.y = y * 10.0;
-			actingForcePoint.z = z * 10.0;
+			actingForcePoint.y = y;
+			actingForcePoint.z = z;
 		}
 		void setIntegrityFactor(double d)
 		{
@@ -167,7 +167,7 @@ namespace F16
 			else
 			{
 				// no weight on wheels
-				CxWheelFriction = (-wheel_roll_friction_factor * weightN) * 3.0;
+				CxWheelFriction = 0;
 				CyWheelFriction = 0;
 			}
 		}
