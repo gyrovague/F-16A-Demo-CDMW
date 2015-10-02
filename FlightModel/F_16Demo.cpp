@@ -158,7 +158,8 @@ namespace F16
 	bool        geardown = FALSE;
 	bool        canopy = TRUE;
 	bool        geardown2 = FALSE;
-
+	bool        CATIII;
+	double      Speeeeed;
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -321,6 +322,7 @@ void ed_fm_simulate(double dt)
 	F16::MACH = F16::FlightControls.getnumber(F16::Atmos.mach);
 	F16::ALT = F16::FlightControls.getnumber2(F16::Atmos.altitude_FT);
 	F16::Beta = F16::FlightControls.getnumber4(F16::beta_DEG);
+	
 
 	// reuse in drawargs
 	F16::aileron_PCT = F16::aileron_DEG / 21.5;
@@ -355,8 +357,8 @@ void ed_fm_simulate(double dt)
 	F16::Fuel.clearUsageSinceLastFrame();
 
 	// TODO: weight-on-wheels detection does not work currently, need to figure out landing gears properly..
-	if (F16::LandingGear.isWoW() == true)
-	{
+	//if (F16::LandingGear.isWoW() == true)
+	//{
 		// TODO: this is not working correctly at the moment, disabled for now
 		/*
 		F16::Motion.updateWheelForces(F16::LandingGear.wheelLeft.CxWheelFriction,
@@ -369,16 +371,21 @@ void ed_fm_simulate(double dt)
 		// use free-rolling friction as single unit for now
 		// TODO: nose-wheel steering, braking forces etc.
 
-		if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000) F16::Motion.updateNoseWheelTurn(Vec3(cos(32.0 / 180.0*M_PI), cos(32.0 / 180.0*M_PI), cos(32.0 / 180.0*M_PI)), 32.0);
-		else if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000) F16::Motion.updateNoseWheelTurn(Vec3(cos(-32.0 / 180.0 * M_PI), cos(-32.0 / 180.0*M_PI), cos(-32.0 / 180.0 * M_PI)), -32.0);
-		else F16::Motion.updateNoseWheelTurn(Vec3(cos(0 / 180.0 * M_PI), 0, cos(0 / 180.0 * M_PI)), 0.0);
+		if (GetAsyncKeyState(0x57) & 0x8000)
+		{
+			F16::LandingGear.setNosewheelSteeringON();
+			F16::LandingGear.setWheelBrakesON();
+		}
+		else F16::LandingGear.setWheelBrakesOFF();
+
+		F16::Motion.updateNoseWheelTurn(F16::LandingGear.getNoseTurnDirection(), F16::LandingGear.getNosegearAngle());
 
 		// combined rolling friction currently, not per-wheel as it should perhaps..
 		F16::Motion.updateRollingFriction(F16::LandingGear.CxRollingFriction, F16::LandingGear.CyRollingFriction);
 
 		// just braking force, needs refining
 		F16::Motion.updateBrakingFriction(F16::LandingGear.wheelLeft.brakeForce, F16::LandingGear.wheelRight.brakeForce);
-	}
+	//}
 
 	// TODO: remove
 	// Tell the simulation that it has gone through the first frame
@@ -406,6 +413,8 @@ void ed_fm_set_surface (double		h,//surface height under the center of aircraft
 	//if (F16::wingSpan_FT >= (F16::meterToFoot*h) && F16::LandingGear.isWoW() == false)
 	{
 		F16::num11 = F16::FlightControls.getnumber11(h_obj);
+
+		F16::CATIII = F16::Engine.getCATI(F16::FlightControls.getCAT());
 		
 		// in ground effect with the surface?
 		// flying above ground, no weight on wheels?
@@ -514,6 +523,8 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
 	
 	double tanpitch = (F16::num9 - wind_vy) / (vx - wind_vx);
 	F16::num8 = F16::FlightControls.getnumber8(tanpitch);
+
+	F16::Speeeeed = F16::Engine.getSpeeeed(vx);
 	//-------------------------------
 	// Start of setting F-16 states
 	//-------------------------------
@@ -1092,7 +1103,7 @@ void ed_fm_hot_start()
 	// canopy closed
 	// electrics on
 	// engine on
-	F16::LandingGear.setGearDown();
+	F16::geardown = TRUE;
 	F16::Airframe.setCanopyClosed();
 	F16::Engine.startEngine();
 	F16::FlightControls.setAirbrakeOFF();
@@ -1113,7 +1124,7 @@ void ed_fm_hot_start_in_air()
 	// canopy closed
 	// electrics on
 	// engine on
-	F16::LandingGear.setGearUp();
+	F16::geardown = FALSE;
 	F16::Airframe.setCanopyClosed();
 	F16::Engine.startEngine();
 	F16::FlightControls.setAirbrakeOFF();
@@ -1327,22 +1338,22 @@ void ed_fm_suspension_feedback(int idx,const ed_fm_suspension_info * info)
 	switch (idx)
 	{
 	case 0:
-		F16::LandingGear.wheelNose.setActingForce(info->acting_force[0], info->acting_force[1], info->acting_force[2]);
-		F16::LandingGear.wheelNose.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1], info->acting_force_point[2]);
+		F16::LandingGear.wheelNose.setActingForce(info->acting_force[0], info->acting_force[1] * 0.1, info->acting_force[2] * 0.1);
+		F16::LandingGear.wheelNose.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1] * 10.0, info->acting_force_point[2] * 10.0);
 		F16::LandingGear.wheelNose.setIntegrityFactor(info->integrity_factor);
 		// 0.231
 		F16::LandingGear.wheelNose.setStrutCompression(info->struct_compression);
 		break;
 	case 1:
-		F16::LandingGear.wheelRight.setActingForce(info->acting_force[0], info->acting_force[1], info->acting_force[2]);
-		F16::LandingGear.wheelRight.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1], info->acting_force_point[2]);
+		F16::LandingGear.wheelRight.setActingForce(info->acting_force[0], info->acting_force[1] * 0.1, info->acting_force[2] * 0.1);
+		F16::LandingGear.wheelRight.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1] * 10.0, info->acting_force_point[2] * 10.0);
 		F16::LandingGear.wheelRight.setIntegrityFactor(info->integrity_factor);
 		// 0.750
 		F16::LandingGear.wheelRight.setStrutCompression(info->struct_compression);
 		break;
 	case 2:
-		F16::LandingGear.wheelLeft.setActingForce(info->acting_force[0], info->acting_force[1], info->acting_force[2]);
-		F16::LandingGear.wheelLeft.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1], info->acting_force_point[2]);
+		F16::LandingGear.wheelLeft.setActingForce(info->acting_force[0], info->acting_force[1] * 0.1, info->acting_force[2] * 0.1);
+		F16::LandingGear.wheelLeft.setActingForcePoint(info->acting_force_point[0], info->acting_force_point[1] * 10.0, info->acting_force_point[2] * 10.0);
 		F16::LandingGear.wheelLeft.setIntegrityFactor(info->integrity_factor);
 		// 0.750
 		F16::LandingGear.wheelLeft.setStrutCompression(info->struct_compression);

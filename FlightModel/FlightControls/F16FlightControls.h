@@ -14,7 +14,7 @@
 
 
 bool        ladder = TRUE;
-int         dele;//LJQC: Elevator deflection for debug use
+int         dele;//LJQC: Speed Brake Display
 bool        HMCS = TRUE;//LJQC: Turn ON/OFF HMCS
 bool        CATI = TRUE;//LJQC: CAT I/III Swtich
 int         a = 0; //LJQC: display KTAS on HMCS
@@ -263,9 +263,9 @@ int Render()
 
 	d3ddev->BeginScene();
 
-	if (TargetWnd == GetForegroundWindow())
+	//if (TargetWnd == GetForegroundWindow())
 
-	{
+	//{
 		//LJQC: Airspeed Display==========================================================================================
 
 		RECT g_TASPosition = { 0, 0, 1350 - 709 - 10, 944 -36 };//LJQC: KTAS symbol
@@ -857,7 +857,7 @@ int Render()
 
 		//LJQC: AOA Bracket display===============================================================================================
 		
-		double alphaa = (b - 13.0)*20.0;
+		double alphaa = (b - 8.1)*20.0;
 
 		if (quaternionz == TRUE)
 		{
@@ -1052,7 +1052,7 @@ int Render()
 			RECT ladderminus80number = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
 			pFont->DrawText(NULL, L"-80", -1, &ladderminus80number, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		}
+		//}
 
 
 	}
@@ -1114,48 +1114,49 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 DWORD WINAPI InputThread(LPVOID lpParam)
 {
-	Sleep(20*1000);
-	wchar_t *pString = reinterpret_cast<wchar_t *> (lpParam);
-	RegisterDLLWindowClass(L"A");
-	TargetWnd = FindWindow(L"A", L"A");
-	hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"A", L"A", WS_EX_TOPMOST | WS_POPUP, 100, 100, 1028, 786, NULL, NULL, NULL, inj_hModule);
-	SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
-	SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
-	ShowWindow(hWnd, SW_SHOW);
-	initD3D(hWnd);
+	    Sleep(20*1000);
 
-	for (;;)
-	{
-		if (HMCS == TRUE)
+		wchar_t *pString = reinterpret_cast<wchar_t *> (lpParam);
+		RegisterDLLWindowClass(L"A");
+		TargetWnd = FindWindow(L"Digital Combat Simulator", L"Digital Combat Simulator");
+		hWnd = CreateWindowEx(WS_EX_TOPMOST | WS_EX_LAYERED | WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"A", L"A", WS_EX_TOPMOST | WS_POPUP, 0, 0, 1366*2.0, 768*2.0, NULL, NULL, NULL, inj_hModule);
+		SetLayeredWindowAttributes(hWnd, RGB(0, 0, 0), 0, ULW_COLORKEY);
+		SetLayeredWindowAttributes(hWnd, 0, 255, LWA_ALPHA);
+		ShowWindow(hWnd, SW_SHOW);
+		initD3D(hWnd);
+
+		for (;;)
 		{
-			if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
+			if (HMCS == TRUE)
 			{
-				TranslateMessage(&Message);
-				DispatchMessage(&Message);
+				if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
+				{
+					TranslateMessage(&Message);
+					DispatchMessage(&Message);
+				}
+
+				TargetWnd = FindWindow(0, L"Digital Combat Simulator");
+				GetWindowRect(TargetWnd, &TargetRect);
+				MoveWindow(hWnd, TargetRect.left, TargetRect.top, TargetRect.right - TargetRect.left, TargetRect.bottom - TargetRect.top, true);
+
+				if (!TargetWnd)
+				{
+					exit(0);
+				}
+
+				Render();
+				Sleep(1);
 			}
-
-			TargetWnd = FindWindow(0, L"DCS");
-			GetWindowRect(TargetWnd, &TargetRect);
-			MoveWindow(hWnd, TargetRect.left, TargetRect.top, TargetRect.right - TargetRect.left, TargetRect.bottom - TargetRect.top, true);
-
-			if (!TargetWnd)
+			else if (HMCS == FALSE)
 			{
-				exit(0);
+				Sleep(1);
+				d3ddev->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
+				d3ddev->Present(NULL, NULL, NULL, NULL);
 			}
-
-			Render();
-			Sleep(1);
 		}
-		else if (HMCS == FALSE)
-		{
-			Sleep(1);
-			d3ddev->Clear(0, 0, D3DCLEAR_TARGET, 0, 1.0f, 0);
-			d3ddev->Present(NULL, NULL, NULL, NULL);
-		}
-	}
 
 
-	return 0;
+		return 0;
 }
 
 
@@ -1834,6 +1835,7 @@ namespace F16
 
 			if (GetAsyncKeyState(0x4D) & 1) HMCS = !HMCS;
 
+
 			if (GetAsyncKeyState(0x43) & 1) CATI = !CATI;
 
 			if (GetAsyncKeyState(0x50) & 1) ladder = !ladder;
@@ -1917,6 +1919,11 @@ namespace F16
 			// TODO: There are problems with flutter with the servo dynamics...needs to be nailed down!
 			//double actuatorDynamicsResult = pitchActuatorDynamicsFilter.Filter(!(simInitialized),dt,finalPitchCommandTotal);
 			//return actuatorDynamicsResult;	
+		}
+
+		bool getCAT() const
+		{
+			return CATI;
 		}
 
 		// Controller for roll

@@ -60,11 +60,11 @@ namespace F16
 			, CDGearAero(0)
 			, CzGearAero(0)
 			, CxGearAero(0)
-			, CxRollingFriction(0)
+			, CxRollingFriction(10.0)
 			, CyRollingFriction(0)
-			, wheelNose(0.479)
-			, wheelLeft(0.68)
-			, wheelRight(0.68)
+			, wheelNose(100.479)
+			, wheelLeft(100.68)
+			, wheelRight(100.68)
 			, parkingBreakOn(false)
 		{
 		}
@@ -90,15 +90,14 @@ namespace F16
 		void setWheelBrakeLeft(double value)
 		{
 			// 0..1 from input
-			if (GetAsyncKeyState(0x57) & 0x8000) wheelLeft.brakeInput = 1;
-			else wheelLeft.brakeInput = 0;
+			wheelLeft.brakeInput = value;
 		}
 		// joystick axis
 		void setWheelBrakeRight(double value)
 		{
 			// 0..1 from input
-			if (GetAsyncKeyState(0x57) & 0x8000) wheelRight.brakeInput = 1;
-			else  wheelRight.brakeInput = 0;
+			//if (GetAsyncKeyState(0x57) & 0x8000) wheelRight.brakeInput = 1;
+			wheelRight.brakeInput = value;
 		}
 
 		// key press DOWN
@@ -140,10 +139,9 @@ namespace F16
 				return;
 			}*/
 			// TODO: check value
-			noseGearTurnAngle = value * 32.0;
+			noseGearTurnAngle = value;
 
 			// for now, just cut input to allowed range in degrees
-			//noseGearTurnAngle = limit(value, -32, 32);
 		}
 
 		// in case of nose wheel: 
@@ -237,9 +235,9 @@ namespace F16
 		{
 			gearAeroDrag();
 
-			wheelNose.updateForceFriction(groundSpeed, weightN);
-			wheelLeft.updateForceFriction(groundSpeed, weightN);
-			wheelRight.updateForceFriction(groundSpeed, weightN);
+			wheelNose.updateForceFriction(groundSpeed, weightN * 10.0);
+			wheelLeft.updateForceFriction(groundSpeed, weightN * 10.0);
+			wheelRight.updateForceFriction(groundSpeed, weightN * 10.0);
 
 			wheelFriction();
 

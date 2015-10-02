@@ -303,6 +303,7 @@ enum ed_fm_param_enum
 	ED_FM_ENGINE_0_TEMPERATURE,//Celcius
 	ED_FM_ENGINE_0_OIL_PRESSURE,
 	ED_FM_ENGINE_0_FUEL_FLOW,
+	ED_FM_ENGINE_0_COMBUSTION,//level of combustion for engine  , 0 - 1
 
 	/*RESERVED PLACE FOR OTHER ENGINE PARAM*/
 	ED_FM_ENGINE_1_RPM = 100,	
@@ -322,6 +323,7 @@ enum ed_fm_param_enum
 	ED_FM_ENGINE_1_TEMPERATURE,//Celcius
 	ED_FM_ENGINE_1_OIL_PRESSURE,
 	ED_FM_ENGINE_1_FUEL_FLOW,
+	ED_FM_ENGINE_1_COMBUSTION,//level of combustion for engine  , 0 - 1
 	//.................................
 	ED_FM_ENGINE_2_RPM = 2 * (ED_FM_ENGINE_1_RPM - ED_FM_ENGINE_0_RPM),
 	ED_FM_ENGINE_2_RELATED_RPM,				
@@ -340,7 +342,7 @@ enum ed_fm_param_enum
 	ED_FM_ENGINE_2_TEMPERATURE,//Celcius
 	ED_FM_ENGINE_2_OIL_PRESSURE,
 	ED_FM_ENGINE_2_FUEL_FLOW,
-
+	ED_FM_ENGINE_2_COMBUSTION,//level of combustion for engine , 0 - 1
 	
 	//.................................
 	ED_FM_ENGINE_3_RPM = 3 * (ED_FM_ENGINE_1_RPM - ED_FM_ENGINE_0_RPM),
@@ -448,10 +450,13 @@ enum ed_fm_param_enum
 	ED_FM_FC3_AUTOPILOT_STATUS,
 	ED_FM_FC3_AUTOPILOT_FAILURE_ATTITUDE_STABILIZATION,
 
-	ED_FM_FC3_STICK_PITCH_LIMITER,	//ограничени?РУ?на се? (-1 .. 0 .. 1, 1 - не ограничивает)
-	ED_FM_FC3_STICK_ROLL_L_LIMITER,	//ограничени?РУ?по крен?(0 .. 1, 1 - не ограничивает)
-	ED_FM_FC3_PEDAL_L_LIMITER,		//ограничени?лево?педали (0 .. 1, 1 - не ограничивает)
-	ED_FM_FC3_PEDAL_R_LIMITER,		//ограничени?правой педали (0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_STICK_PITCH_LIMITER,	//ограничение РУС на себя (-1 .. 0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_STICK_ROLL_L_LIMITER,	//ограничение РУС по крену (0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_PEDAL_L_LIMITER,		//ограничение левой педали (0 .. 1, 1 - не ограничивает)
+	ED_FM_FC3_PEDAL_R_LIMITER,		//ограничение правой педали (0 .. 1, 1 - не ограничивает)
+
+	ED_FM_FC3_BREAKE_CHUTE_STATUS,
+	ED_FM_FC3_BREAKE_CHUTE_VALUE,
 
 	ED_FM_FC3_RESERVED_SPACE_END = 11000,
 };

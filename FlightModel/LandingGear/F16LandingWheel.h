@@ -49,18 +49,17 @@ namespace F16
 		Vec3 actingForce;
 		Vec3 actingForcePoint;
 		double integrityFactor;
-		bool Gearr = FALSE;
 
 		F16LandingWheel(const double wheelRadius) 
 			//: rolling_friction(0.03)
 			: wheel_radius(wheelRadius) // all other same on each wheel? (check)
 			, wheel_static_friction_factor(0.65)
-			, wheel_side_friction_factor(0.65)
-			, wheel_roll_friction_factor(0.025)
-			, wheel_glide_friction_factor(0.28)
+			, wheel_side_friction_factor(0.065)
+			, wheel_roll_friction_factor(0)
+			, wheel_glide_friction_factor(0.028)
 			, wheel_damage_force_factor(250.0)
 			, wheel_damage_speed(150.0)
-			, wheel_moment_of_inertia(3.6) // <- should be different for nose wheel? (smaller wheel)
+			, wheel_moment_of_inertia(0) // <- should be different for nose wheel? (smaller wheel)
 			, wheel_brake_moment_max(15000.0)
 			, strutCompression(0)
 			, CxWheelFriction(0)
@@ -76,7 +75,7 @@ namespace F16
 
 		bool isWoW() const
 		{
-			if (Gearr == TRUE)
+			if (strutCompression > 0)
 			{
 				return true;
 			}
@@ -87,46 +86,42 @@ namespace F16
 
 		void wheelBrake()
 		{
-			if (Gearr == FALSE)
+			if (strutCompression == 0)
 			{
 				// no weight on wheels?
 				brakeForce = 0;
 				return;
 			}
-			else
+			/*
+			if (brakeInput <= 0)
 			{
-
-				/*
-				if (brakeInput <= 0)
-				{
-				return;
-				}
-				*/
-
-				// TODO: find out some reasonable values,
-				// do we need to have brake fading support as well?
-				// TODO: also switch calculation to reduction in kinectic energy in motion handling
-				// -> should calculate proper moment here
-				brakeForce = 9000; // guess, find out reasonable value for this!!
-				brakeForce = limit(brakeForce, 0, wheel_brake_moment_max);
-
-				// just add it to rolling friction
-				//CxWheelFriction += (wheel_roll_friction_factor * brakeFriction * weightN);
-				//CyWheelFriction = 0.18 * weightN;
+			return;
 			}
+			*/
+
+			// TODO: find out some reasonable values,
+			// do we need to have brake fading support as well?
+			// TODO: also switch calculation to reduction in kinectic energy in motion handling
+			// -> should calculate proper moment here
+			brakeForce = abs(brakeInput) * 5000; // guess, find out reasonable value for this!!
+			brakeForce = limit(brakeForce, 0, wheel_brake_moment_max);
+
+			// just add it to rolling friction
+			//CxWheelFriction += (rolling_friction * brakeFriction * weightN);
+			//CyWheelFriction = 0.18 * weightN;
 		}
 
 		void setActingForce(double x, double y, double z)
 		{
 			actingForce.x = x;
-			actingForce.y = y;
-			actingForce.z = z;
+			actingForce.y = y * 0.1;
+			actingForce.z = z * 0.1;
 		}
 		void setActingForcePoint(double x, double y, double z)
 		{
 			actingForcePoint.x = x;
-			actingForcePoint.y = y;
-			actingForcePoint.z = z;
+			actingForcePoint.y = y * 10.0;
+			actingForcePoint.z = z * 10.0;
 		}
 		void setIntegrityFactor(double d)
 		{
@@ -150,15 +145,12 @@ namespace F16
 		{
 			// TODO: also if wheel rotation is slower than speed relative to ground
 			// -> apply sliding friction factor
-			if (GetAsyncKeyState(0x51) & 0x8000) Gearr = TRUE;
-			else Gearr = FALSE;
 
-			if (Gearr == TRUE)//groundSpeed > 0
+			if (isWoW() == true && groundSpeed > 0)
 			{
 				// TODO: amount of weight per wheel instead?
 				// also weight balance? wheel size?
 				// TODO: nose-gear steering angle etc.
-				
 				CxWheelFriction = (-wheel_roll_friction_factor * weightN);
 
 				// should have wheel_side_friction_factor ?
@@ -168,14 +160,14 @@ namespace F16
 			/*
 			else if (isWoW() == true && groundSpeed == 0)
 			{
-				CxWheelFriction = wheel_static_friction_factor;
-				CyWheelFriction = wheel_side_friction_factor;
+			CxWheelFriction = wheel_static_friction_factor;
+			CyWheelFriction = wheel_side_friction_factor;
 			}
 			*/
 			else
 			{
 				// no weight on wheels
-				CxWheelFriction = 0;
+				CxWheelFriction = (-wheel_roll_friction_factor * weightN) * 3.0;
 				CyWheelFriction = 0;
 			}
 		}
