@@ -84,7 +84,7 @@ double         pitchtrim = 0.0;
 
 //for HMCS debug
 double         displayX = -1.0;
-double         displayY = 1.0;
+double         displayY = -183.0;
 double         displayZ = 1.0;
 double         displayW = 1.0;
 double         displayC = 1.0;
@@ -268,10 +268,10 @@ int Render()
 	//{
 		//LJQC: Airspeed Display==========================================================================================
 
-		RECT g_TASPosition = { 0, 0, 1350 - 709 - 10, 944 -36 };//LJQC: KTAS symbol
+		RECT g_TASPosition = { 0, 0, 1350 - 709 - 10 + 16, 944 -36 };//LJQC: KTAS symbol
 		pFont->DrawText(NULL, L"T", -1, &g_TASPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_SpeedvaluePosition = { 0, 0, 1350 - 649, 944 - 36 };//LJQC: KTAS value
+		RECT g_SpeedvaluePosition = { 0, 0, 1350 - 649 + 16, 944 - 36 };//LJQC: KTAS value
 		std::ostringstream s1(a);
 		s1 << a;
 		pFont->DrawTextA(NULL, s1.str().c_str(), -1, &g_SpeedvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -292,7 +292,7 @@ int Render()
 
 		IAS = proc5;
 
-		RECT g_SpeedvalueIASPosition = { 0, 0, 1350 - 630, 784 };//LJQC: KIAS value
+		RECT g_SpeedvalueIASPosition = { 0, 0, 1350 - 630 + 16, 784 };//LJQC: KIAS value
 		std::ostringstream s31(IAS);
 		s31 << IAS;
 		pFontHUD->DrawTextA(NULL, s31.str().c_str(), -1, &g_SpeedvalueIASPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -301,33 +301,33 @@ int Render()
 
 		KTASast = proc5 / 50.0 * M_PI;//LJQC: 360deg for 100Kts according to RL F-22 HUD Tape
 
-		DrawLine(720 / 2.0 + 62.123*sin(KTASast) / 2.0, 784 / 2.0 - 48.0*cos(KTASast) / 2.0, 720 / 2.0 + 92.055*sin(KTASast) / 2.0, 784 / 2.0 - 70.0*cos(KTASast) / 2.0, 132, 251, 169, 255);
+		DrawLine(720 / 2.0 + 62.123*sin(KTASast) / 2.0 + 8, 784 / 2.0 - 48.0*cos(KTASast) / 2.0, 720 / 2.0 + 92.055*sin(KTASast) / 2.0 + 8, 784 / 2.0 - 70.0*cos(KTASast) / 2.0, 132, 251, 169, 255);
 
 		//LJQC: Dots for KIAS digital clock display
-		DrawDot(720 / 2.0 + 96.0*sin(0) / 2.0, 784 / 2.0 + 73.0*cos(0) / 2.0, 720 / 2.0 + 104.0*sin(0) / 2.0, 784 / 2.0 + 81.0*cos(0) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c1) / 2.0, 784 / 2.0 + 73.0*cos(c1) / 2.0, 720 / 2.0 + 104.0*sin(c1) / 2.0, 784 / 2.0 + 81.0*cos(c1) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c2) / 2.0, 784 / 2.0 + 73.0*cos(c2) / 2.0, 720 / 2.0 + 104.0*sin(c2) / 2.0, 784 / 2.0 + 81.0*cos(c2) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c3) / 2.0, 784 / 2.0 + 73.0*cos(c3) / 2.0, 720 / 2.0 + 104.0*sin(c3) / 2.0, 784 / 2.0 + 81.0*cos(c3) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c4) / 2.0, 784 / 2.0 + 73.0*cos(c4) / 2.0, 720 / 2.0 + 104.0*sin(c4) / 2.0, 784 / 2.0 + 81.0*cos(c4) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c5) / 2.0, 784 / 2.0 + 73.0*cos(c5) / 2.0, 720 / 2.0 + 104.0*sin(c5) / 2.0, 784 / 2.0 + 81.0*cos(c5) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c6) / 2.0, 784 / 2.0 + 73.0*cos(c6) / 2.0, 720 / 2.0 + 104.0*sin(c6) / 2.0, 784 / 2.0 + 81.0*cos(c6) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c7) / 2.0, 784 / 2.0 + 73.0*cos(c7) / 2.0, 720 / 2.0 + 104.0*sin(c7) / 2.0, 784 / 2.0 + 81.0*cos(c7) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c8) / 2.0, 784 / 2.0 + 73.0*cos(c8) / 2.0, 720 / 2.0 + 104.0*sin(c8) / 2.0, 784 / 2.0 + 81.0*cos(c8) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c9) / 2.0, 784 / 2.0 + 73.0*cos(c9) / 2.0, 720 / 2.0 + 104.0*sin(c9) / 2.0, 784 / 2.0 + 81.0*cos(c9) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c10) / 2.0, 784 / 2.0 + 73.0*cos(c10) / 2.0, 720 / 2.0 + 104.0*sin(c10) / 2.0, 784 / 2.0 + 81.0*cos(c10) / 2.0, 132, 251, 169, 255);
-		DrawDot(720 / 2.0 + 96.0*sin(c11) / 2.0, 784 / 2.0 + 73.0*cos(c11) / 2.0, 720 / 2.0 + 104.0*sin(c11) / 2.0, 784 / 2.0 + 81.0*cos(c11) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(0) / 2.0, 784 / 2.0 + 73.0*cos(0) / 2.0, 8 + 720 / 2.0 + 104.0*sin(0) / 2.0, 784 / 2.0 + 81.0*cos(0) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c1) / 2.0, 784 / 2.0 + 73.0*cos(c1) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c1) / 2.0, 784 / 2.0 + 81.0*cos(c1) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c2) / 2.0, 784 / 2.0 + 73.0*cos(c2) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c2) / 2.0, 784 / 2.0 + 81.0*cos(c2) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c3) / 2.0, 784 / 2.0 + 73.0*cos(c3) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c3) / 2.0, 784 / 2.0 + 81.0*cos(c3) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c4) / 2.0, 784 / 2.0 + 73.0*cos(c4) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c4) / 2.0, 784 / 2.0 + 81.0*cos(c4) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c5) / 2.0, 784 / 2.0 + 73.0*cos(c5) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c5) / 2.0, 784 / 2.0 + 81.0*cos(c5) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c6) / 2.0, 784 / 2.0 + 73.0*cos(c6) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c6) / 2.0, 784 / 2.0 + 81.0*cos(c6) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c7) / 2.0, 784 / 2.0 + 73.0*cos(c7) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c7) / 2.0, 784 / 2.0 + 81.0*cos(c7) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c8) / 2.0, 784 / 2.0 + 73.0*cos(c8) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c8) / 2.0, 784 / 2.0 + 81.0*cos(c8) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c9) / 2.0, 784 / 2.0 + 73.0*cos(c9) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c9) / 2.0, 784 / 2.0 + 81.0*cos(c9) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c10) / 2.0, 784 / 2.0 + 73.0*cos(c10) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c10) / 2.0, 784 / 2.0 + 81.0*cos(c10) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 720 / 2.0 + 96.0*sin(c11) / 2.0, 784 / 2.0 + 73.0*cos(c11) / 2.0, 8 + 720 / 2.0 + 104.0*sin(c11) / 2.0, 784 / 2.0 + 81.0*cos(c11) / 2.0, 132, 251, 169, 255);
 		
 
 		//LJQC: AOA display=====================================================================================================
 
-		DrawLine(720 / 2.0, (784 - 198 + 90) / 2.0, 720 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
-		DrawLine(720 / 2.0, (784 - 198 + 88) / 2.0, 680 / 2.0, (784 - 198 + 88) / 2.0, 132, 251, 169, 255);
-		DrawLine(720 / 2.0, (784 - 198 - 90) / 2.0, 680 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 720 / 2.0, (784 - 198 + 90) / 2.0, 8 + 720 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 720 / 2.0, (784 - 198 + 88) / 2.0, 8 + 680 / 2.0, (784 - 198 + 88) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 720 / 2.0, (784 - 198 - 90) / 2.0, 8 + 680 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
 
-		RECT g_AOAsym33Position = { 0, 0, 1350 - 673 + 26, 364 + 105 };
+		RECT g_AOAsym33Position = { 0, 0, 16 + 1350 - 673 + 26, 364 + 105 };
 		pFont->DrawText(NULL, L"α", -1, &g_AOAsym33Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_AOAPosition = { 0, 0, 1350 - 673, 784 - 198 };
+		RECT g_AOAPosition = { 0, 0, 16 + 1350 - 673, 784 - 198 };
 
 		if (TVC == FALSE) pFont->DrawText(NULL, L"15.0 >", -1, &g_AOAPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		else if (TVC == TRUE) pFont->DrawText(NULL, L"90.0 >", -1, &g_AOAPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -339,11 +339,11 @@ int Render()
 			if (b <= 30 && b >= 0)
 			{
 
-				RECT g_AOAsymPosition = { 0, 0, 1350 - 588 - 30, 784 - 198 + 90 - b * 6.0 };
+				RECT g_AOAsymPosition = { 0, 0, 16 + 1350 - 588 - 30, 784 - 198 + 90 - b * 6.0 };
 				pFont->DrawText(NULL, L"<", -1, &g_AOAsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-				RECT g_AOAvaluePosition = { 0, 0, 1350 - 560, 784 - 198 + 90 - b * 6.0 };//LJQC: AOA 数值
+				RECT g_AOAvaluePosition = { 0, 0, 16 + 1350 - 560, 784 - 198 + 90 - b * 6.0 };//LJQC: AOA 数值
 				std::ostringstream s2(AOA);
 				s2 << AOA;
 				pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -351,11 +351,11 @@ int Render()
 			else if (b > 30)
 			{
 
-				RECT g_AOAsymPosition = { 0, 0, 1350 - 588 - 30, 784 - 198 - 90 };
+				RECT g_AOAsymPosition = { 0, 0, 16 + 1350 - 588 - 30, 784 - 198 - 90 };
 				pFont->DrawText(NULL, L"<", -1, &g_AOAsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-				RECT g_AOAvaluePosition = { 0, 0, 1350 - 560, 784 - 198 - 90 };//LJQC: AOA 数值
+				RECT g_AOAvaluePosition = { 0, 0, 16 + 1350 - 560, 784 - 198 - 90 };//LJQC: AOA 数值
 				std::ostringstream s2(AOA);
 				s2 << AOA;
 				pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -363,11 +363,11 @@ int Render()
 			else if (b < 0)
 			{
 
-				RECT g_AOAsymPosition = { 0, 0, 1350 - 588 - 30, 784 - 198 + 90 };
+				RECT g_AOAsymPosition = { 0, 0, 16 + 1350 - 588 - 30, 784 - 198 + 90 };
 				pFont->DrawText(NULL, L"<", -1, &g_AOAsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-				RECT g_AOAvaluePosition = { 0, 0, 1350 - 560, 784 - 198 + 90 };//LJQC: AOA 数值
+				RECT g_AOAvaluePosition = { 0, 0, 16 + 1350 - 560, 784 - 198 + 90 };//LJQC: AOA 数值
 				std::ostringstream s2(AOA);
 				s2 << AOA;
 				pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -378,11 +378,11 @@ int Render()
 			if (b >= 0)
 			{
 
-				RECT g_AOAsymPosition = { 0, 0, 1350 - 588 - 30, 784 - 198 + 90 - b * 1.0 };
+				RECT g_AOAsymPosition = { 0, 0, 16 + 1350 - 588 - 30, 784 - 198 + 90 - b * 1.0 };
 				pFont->DrawText(NULL, L"<", -1, &g_AOAsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-				RECT g_AOAvaluePosition = { 0, 0, 1350 - 560, 784 - 198 + 90 - b * 1.0 };//LJQC: AOA 数值
+				RECT g_AOAvaluePosition = { 0, 0, 16 + 1350 - 560, 784 - 198 + 90 - b * 1.0 };//LJQC: AOA 数值
 				std::ostringstream s2(AOA);
 				s2 << AOA;
 				pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -390,11 +390,11 @@ int Render()
 			else if (b < 0)
 			{
 
-				RECT g_AOAsymPosition = { 0, 0, 1350 - 588 - 30, 784 - 198 + 90 };
+				RECT g_AOAsymPosition = { 0, 0, 16 + 1350 - 588 - 30, 784 - 198 + 90 };
 				pFont->DrawText(NULL, L"<", -1, &g_AOAsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-				RECT g_AOAvaluePosition = { 0, 0, 1350 - 560, 784 - 198 + 90 };//LJQC: AOA 数值
+				RECT g_AOAvaluePosition = { 0, 0, 16 + 1350 - 560, 784 - 198 + 90 };//LJQC: AOA 数值
 				std::ostringstream s2(AOA);
 				s2 << AOA;
 				pFont->DrawTextA(NULL, s2.str().c_str(), -1, &g_AOAvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -403,10 +403,10 @@ int Render()
 
 		//LJQC: Mach number display===============================================================================================
 
-		RECT g_MACHPosition = { 0, 0, 1350 - 709, 984 - 30 };//LJQC: Mach
+		RECT g_MACHPosition = { 0, 0, 16 + 1350 - 709, 984 - 30 };//LJQC: Mach
 		pFont->DrawText(NULL, L"M", -1, &g_MACHPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_MACHvaluePosition = { 0, 0, 1350 - 653, 984 - 30 };//LJQC: Mach Number
+		RECT g_MACHvaluePosition = { 0, 0, 16 + 1350 - 653, 984 - 30 };//LJQC: Mach Number
 		std::ostringstream s6(MACH);
 		s6 << MACH;
 		pFont->DrawTextA(NULL, s6.str().c_str(), -1, &g_MACHvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -416,20 +416,20 @@ int Render()
 		//LJQC: G-load display ===============================================================================================
 
 
-		RECT g_GPosition = { 0, 0, 1350 - 709, 1064 - 30 };//LJQC: G-load符号
+		RECT g_GPosition = { 0, 0, 16 + 1350 - 709, 1064 - 30 };//LJQC: G-load符号
 		pFont->DrawText(NULL, L"G", -1, &g_GPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_GvaluePosition = { 0, 0, 1350 - 645, 1064 - 30 };//LJQC: G-load 数值
+		RECT g_GvaluePosition = { 0, 0, 16 + 1350 - 645, 1064 - 30 };//LJQC: G-load 数值
 		std::ostringstream s3(Gs);
 		s3 << Gs;
 		pFont->DrawTextA(NULL, s3.str().c_str(), -1, &g_GvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		//LJQC: Additional AOA display=====================================================================
 
-		RECT g_AOA2Position = { 0, 0, 1350 - 709 - 10, 1104 - 30 };//LJQC: G-load符号
+		RECT g_AOA2Position = { 0, 0, 16 + 1350 - 709 - 10, 1104 - 30 };//LJQC: G-load符号
 		pFont->DrawText(NULL, L"α", -1, &g_AOA2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_AOAvaluePosition2 = { 0, 0, 1350 - 645, 1104 - 30 };//LJQC: AOA 数值
+		RECT g_AOAvaluePosition2 = { 0, 0, 16 + 1350 - 645, 1104 - 30 };//LJQC: AOA 数值
 		std::ostringstream s442(AOA);
 		s442 << AOA;
 		pFont->DrawTextA(NULL, s442.str().c_str(), -1, &g_AOAvaluePosition2, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -439,7 +439,7 @@ int Render()
 		if (Gs > MaxG) MaxG = Gs;
 		MaxG = floor(MaxG * 10.0f + 0.5) / 10.0f;
 
-		RECT g_MaxGPosition = { 0, 0, 1350 - 645, 1184 - 30 };//LJQC: AOA 数值
+		RECT g_MaxGPosition = { 0, 0, 16 + 1350 - 645, 1184 - 30 };//LJQC: AOA 数值
 		std::ostringstream s443(MaxG);
 		s443 << MaxG;
 		pFont->DrawTextA(NULL, s443.str().c_str(), -1, &g_MaxGPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -448,32 +448,32 @@ int Render()
 		//LJQC: Misc Indications================================================================================
 
 
-		RECT g_CATPosition = { 0, 0, 1860, 1064 - 30 };
+		RECT g_CATPosition = { 0, 0, 16 + 1860, 1064 - 30 };
 		if (CATI == TRUE && TVC == FALSE) pFont->DrawText(NULL, L"CAT I", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		else if (CATI == FALSE && TVC == FALSE) pFont->DrawText(NULL, L"CAT III", -1, &g_CATPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 		if (TVC == TRUE)
 		{
-			RECT g_TVCPosition = { 0, 0, 1860, 1064 - 30 };//LJQC: TVC符号
+			RECT g_TVCPosition = { 0, 0, 16 + 1860, 1064 - 30 };//LJQC: TVC符号
 			pFont->DrawText(NULL, L"TVC ON", -1, &g_TVCPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 
 		if (TVC == TRUE && directmode == 1)
 		{
-			RECT g_SPosition = { 0, 0, 1860, 1104 - 30 };
+			RECT g_SPosition = { 0, 0, 16 + 1860, 1104 - 30 };
 			pFont->DrawText(NULL, L"Direct Mode", -1, &g_SPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 
 		if (TVC == TRUE && GetAsyncKeyState(0x52) & 0x8000)
 		{
-			RECT g_GLIMPosition = { 0, 0, 1860, 1144 - 30 };
+			RECT g_GLIMPosition = { 0, 0, 16 + 1860, 1144 - 30 };
 			pFont->DrawText(NULL, L"G-LIM OVRD", -1, &g_GLIMPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 
 		if (dele == 1) //LJQC: Speed Brake Display
 		{
-			RECT g_UFOPosition = { 0, 0, 1860, 1184 - 30 };
+			RECT g_UFOPosition = { 0, 0, 16 + 1860, 1184 - 30 };
 			pFont->DrawText(NULL, L"SPD BRK", -1, &g_UFOPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 		
@@ -481,33 +481,33 @@ int Render()
 
 		//LJQC: Input Display =========================================================================================
 
-		RECT g_PITCHsvaluePosition = { 0, 0, 2180 - 50, 854 + 150 };
+		RECT g_PITCHsvaluePosition = { 0, 0, 16 + 2180 - 50, 854 + 150 };
 		std::ostringstream s14(stickcommand);
 		s14 << stickcommand;
 		pFont->DrawTextA(NULL, s14.str().c_str(), -1, &g_PITCHsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_ROLLsvaluePosition = { 0, 0, 2360 - 50, 1064 + 150 };
+		RECT g_ROLLsvaluePosition = { 0, 0, 16 + 2360 - 50, 1064 + 150 };
 		std::ostringstream s15(rollinput);
 		s15 << rollinput;
 		pFont->DrawTextA(NULL, s15.str().c_str(), -1, &g_ROLLsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
-		RECT g_pitchvPosition = { 0, 0, 2180 - 50, 1064 + 150 };
+		RECT g_pitchvPosition = { 0, 0, 16 + 2180 - 50, 1064 + 150 };
 		pFont->DrawText(NULL, L"+", -1, &g_pitchvPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_pitchPosition = { 0, 0, 2180 - 50 + rollinput * 2.0, 1064 + 150 - stickcommand };
+		RECT g_pitchPosition = { 0, 0, 16 + 2180 - 50 + rollinput * 2.0, 1064 + 150 - stickcommand };
 		pFont->DrawText(NULL, L"+", -1, &g_pitchPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		
-		DrawLine2((2030 - 50) / 2.0, (884 + 150) / 2.0, (2330 - 50) / 2.0, (884 + 150) / 2.0, 132, 251, 169, 255);
-		DrawLine2((2030 - 50) / 2.0, (884 + 150) / 2.0, (2030 - 50) / 2.0, (1244 + 150) / 2.0, 132, 251, 169, 255);
-		DrawLine2((2330 - 50) / 2.0, (1244 + 150) / 2.0, (2330 - 50) / 2.0, (884 + 150) / 2.0, 132, 251, 169, 255);
-		DrawLine2((2330 - 50) / 2.0, (1244 + 150) / 2.0, (2030 - 50) / 2.0, (1244 + 150) / 2.0, 132, 251, 169, 255);
+		DrawLine2(8 + (2030 - 50) / 2.0, (884 + 150) / 2.0, 8 + (2330 - 50) / 2.0, (884 + 150) / 2.0, 132, 251, 169, 255);
+		DrawLine2(8 + (2030 - 50) / 2.0, (884 + 150) / 2.0, 8 + (2030 - 50) / 2.0, (1244 + 150) / 2.0, 132, 251, 169, 255);
+		DrawLine2(8 + (2330 - 50) / 2.0, (1244 + 150) / 2.0, 8 + (2330 - 50) / 2.0, (884 + 150) / 2.0, 132, 251, 169, 255);
+		DrawLine2(8 + (2330 - 50) / 2.0, (1244 + 150) / 2.0, 8 + (2030 - 50) / 2.0, (1244 + 150) / 2.0, 132, 251, 169, 255);
 
 		double throttlepos = quaterniony / 3000.0 * 360.0; 
-		RECT g_throttlepos = { 0, 0, 2330 - 50, 1244 + 150 - throttlepos };
+		RECT g_throttlepos = { 0, 0, 16 + 2330 - 50, 1244 + 150 - throttlepos };
 		pFont->DrawText(NULL, L"+", -1, &g_throttlepos, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_MILpos = { 0, 0, 2330 - 54, 1244 + 150 - 2400.0 / 3000.0 * 360.0 };
+		RECT g_MILpos = { 0, 0, 16 + 2330 - 54, 1244 + 150 - 2400.0 / 3000.0 * 360.0 };
 		pFont->DrawText(NULL, L">", -1, &g_MILpos, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
@@ -517,8 +517,8 @@ int Render()
 		std::ostringstream s19(displayX);
 		s19 << displayX;
 		pFont->DrawTextA(NULL, s19.str().c_str(), -1, &g_PITCHtrimsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
-
-		RECT g_PITCHoutputsvaluePosition = { 0, 0, 850, 840 };
+		
+		RECT g_PITCHoutputsvaluePosition = { 0, 0, 25 + 850, 840 };
 		std::ostringstream s20(displayY);
 		s20 << displayY;
 		pFont->DrawTextA(NULL, s20.str().c_str(), -1, &g_PITCHoutputsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -559,27 +559,27 @@ int Render()
 
 		//LJQC: Gun sight display===================================================================================================================
 
-		double gunsightX = (displayX * Sideforce * 10.0 + displayY * rollrate / 10.0 + displayZ * yawrate * 5.0);
-		double gunsightY = (displayW * pitchrate * 2.0 + displayC * num10 * 2.0);
+		//double gunsightX = (displayX * Sideforce * 10.0 + displayY * rollrate / 10.0 + displayZ * yawrate * 5.0);
+		//double gunsightY = (displayW * pitchrate * 2.0 + displayC * num10 * 2.0);
 
 		if (ladder == FALSE)
 		{
 			//Left Line
-			DrawLine(1300 / 2.0, 764 / 2.0, (1330 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, 132, 251, 169, 255);
-			DrawLine((1330 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, (1340 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, 132, 251, 169, 255);
-			DrawLine((1340 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, (1345 + 1.6 * (-0.9 * Sideforce * 10.0 + 12.4 * rollrate / 10.0 - 1.8 * yawrate * 5.0)) / 2.0, (764 + 1.6 * (-0.2 * pitchrate * 2.0 + 1.9 * num10 * 2.0)) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + 1300 / 2.0, 764 / 2.0 + displayY / 2.0, 8 + (1330 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1330 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0 + displayY / 2.0, 8 + (1340 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1340 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0 + displayY / 2.0, 8 + (1345 + 1.6 * (-0.9 * Sideforce * 10.0 + 12.4 * rollrate / 10.0 - 1.8 * yawrate * 5.0)) / 2.0, (764 + 1.6 * (-0.2 * pitchrate * 2.0 + 1.9 * num10 * 2.0)) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
 			//Right Line
-			DrawLine(1400 / 2.0, 764 / 2.0, (1370 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, 132, 251, 169, 255);
-			DrawLine((1370 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0, (1360 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, 132, 251, 169, 255);
-			DrawLine((1360 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0, (1355 + 1.6 * (-0.9 * Sideforce * 10.0 + 12.4 * rollrate / 10.0 - 1.8 * yawrate * 5.0)) / 2.0, (764 + 1.6 * (-0.2 * pitchrate * 2.0 + 1.9 * num10 * 2.0)) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + 1400 / 2.0, 764 / 2.0 + displayY / 2.0, 8 + (1370 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1370 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 2.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 2.0 + displayY / 2.0, 8 + (1360 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1360 + 1.2 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 2.0, (764 + 1.2 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 2.0 + displayY / 2.0, 8 + (1355 + 1.6 * (-0.9 * Sideforce * 10.0 + 12.4 * rollrate / 10.0 - 1.8 * yawrate * 5.0)) / 2.0, (764 + 1.6 * (-0.2 * pitchrate * 2.0 + 1.9 * num10 * 2.0)) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
 			//Aiming dot 1
-			RECT g_dot1Position = { 0, 0, (1350 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 1.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 1.0 };
+			RECT g_dot1Position = { 0, 0, 16 + (1350 + 0.8 * (2.1 * Sideforce * 10.0 - 1.4 * rollrate / 10.0 - 2.4 * yawrate * 5.0)) / 1.0, (764 + 0.8 * (2.3 * pitchrate * 2.0)) / 1.0 + displayY };
 			pFont->DrawText(NULL, L"•", -1, &g_dot1Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 			//Aiming dot 2
-			RECT g_dot2Position = { 0, 0, (1350 + 1.0 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 1.0, (764 + 1.0 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 1.0 };
+			RECT g_dot2Position = { 0, 0, 16 + (1350 + 1.0 * (-1.0 * Sideforce * 10.0 - 10.5 * rollrate / 10.0 - 1.6 * yawrate * 5.0)) / 1.0, (764 + 1.0 * (1.1 * pitchrate * 2.0 + num10 * 2.0)) / 1.0 + displayY };
 			pFont->DrawText(NULL, L"•", -1, &g_dot2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		}
@@ -591,33 +591,33 @@ int Render()
 		
 		//LJQC: Altitude display =================================================================================================
 
-		DrawLine(1860 / 2.0, (784 - 198 + 90) / 2.0, 1860 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
-		DrawLine(1860 / 2.0, (784 - 198 + 88) / 2.0, 1900 / 2.0, (784 - 198 + 88) / 2.0, 132, 251, 169, 255);
-		DrawLine(1860 / 2.0, (784 - 198 - 90) / 2.0, 1900 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 1860 / 2.0, (784 - 198 + 90) / 2.0, 8 + 1860 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 1860 / 2.0, (784 - 198 + 88) / 2.0, 8 + 1900 / 2.0, (784 - 198 + 88) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 1860 / 2.0, (784 - 198 - 90) / 2.0, 8 + 1900 / 2.0, (784 - 198 - 90) / 2.0, 132, 251, 169, 255);
 
 
-		RECT g_ALTvaluePosition = { 0, 0, 1350 + 630, 784 };//LJQC: Altitude Number Display
+		RECT g_ALTvaluePosition = { 0, 0, 16 + 1350 + 630, 784 };//LJQC: Altitude Number Display
 		std::ostringstream s7(ALT);
 		s7 << ALT;
 		pFontHUD->DrawTextA(NULL, s7.str().c_str(), -1, &g_ALTvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		ALTast = dALT / 500.0 * M_PI; //LJQC: 360deg for 1000Ft according to RL F-22 HUD Tape
 
-		DrawLine(1980 / 2.0 + 74.895*sin(ALTast) / 2.0, 784 / 2.0 - 57.0 * cos(ALTast) / 2.0, 1980 / 2.0 + 110.372*sin(ALTast) / 2.0, 784 / 2.0 - 84.0*cos(ALTast) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + 1980 / 2.0 + 74.895*sin(ALTast) / 2.0, 784 / 2.0 - 57.0 * cos(ALTast) / 2.0, 8 + 1980 / 2.0 + 110.372*sin(ALTast) / 2.0, 784 / 2.0 - 84.0*cos(ALTast) / 2.0, 132, 251, 169, 255);
 
 		//LJQC: Dots for ALT digital clock display
-		DrawDot(1980 / 2.0 + 113.0 *sin(0) / 2.0, 784 / 2.0 + 86.0*cos(0) / 2.0, 1980 / 2.0 + 121.0*sin(0) / 2.0, 784 / 2.0 + 94.0*cos(0) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c1) / 2.0, 784 / 2.0 + 86.0*cos(c1) / 2.0, 1980 / 2.0 + 121.0*sin(c1) / 2.0, 784 / 2.0 + 94.0*cos(c1) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c2) / 2.0, 784 / 2.0 + 86.0*cos(c2) / 2.0, 1980 / 2.0 + 121.0*sin(c2) / 2.0, 784 / 2.0 + 94.0*cos(c2) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c3) / 2.0, 784 / 2.0 + 86.0*cos(c3) / 2.0, 1980 / 2.0 + 121.0*sin(c3) / 2.0, 784 / 2.0 + 94.0*cos(c3) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c4) / 2.0, 784 / 2.0 + 86.0*cos(c4) / 2.0, 1980 / 2.0 + 121.0*sin(c4) / 2.0, 784 / 2.0 + 94.0*cos(c4) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c5) / 2.0, 784 / 2.0 + 86.0*cos(c5) / 2.0, 1980 / 2.0 + 121.0*sin(c5) / 2.0, 784 / 2.0 + 94.0*cos(c5) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c6) / 2.0, 784 / 2.0 + 86.0*cos(c6) / 2.0, 1980 / 2.0 + 121.0*sin(c6) / 2.0, 784 / 2.0 + 94.0*cos(c6) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c7) / 2.0, 784 / 2.0 + 86.0*cos(c7) / 2.0, 1980 / 2.0 + 121.0*sin(c7) / 2.0, 784 / 2.0 + 94.0*cos(c7) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c8) / 2.0, 784 / 2.0 + 86.0*cos(c8) / 2.0, 1980 / 2.0 + 121.0*sin(c8) / 2.0, 784 / 2.0 + 94.0*cos(c8) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c9) / 2.0, 784 / 2.0 + 86.0*cos(c9) / 2.0, 1980 / 2.0 + 121.0*sin(c9) / 2.0, 784 / 2.0 + 94.0*cos(c9) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c10) / 2.0, 784 / 2.0 + 86.0*cos(c10) / 2.0, 1980 / 2.0 + 121.0*sin(c10) / 2.0, 784 / 2.0 + 94.0*cos(c10) / 2.0, 132, 251, 169, 255);
-		DrawDot(1980 / 2.0 + 113.0 * sin(c11) / 2.0, 784 / 2.0 + 86.0*cos(c11) / 2.0, 1980 / 2.0 + 121.0*sin(c11) / 2.0, 784 / 2.0 + 94.0*cos(c11) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 *sin(0) / 2.0, 784 / 2.0 + 86.0*cos(0) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(0) / 2.0, 784 / 2.0 + 94.0*cos(0) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c1) / 2.0, 784 / 2.0 + 86.0*cos(c1) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c1) / 2.0, 784 / 2.0 + 94.0*cos(c1) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c2) / 2.0, 784 / 2.0 + 86.0*cos(c2) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c2) / 2.0, 784 / 2.0 + 94.0*cos(c2) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c3) / 2.0, 784 / 2.0 + 86.0*cos(c3) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c3) / 2.0, 784 / 2.0 + 94.0*cos(c3) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c4) / 2.0, 784 / 2.0 + 86.0*cos(c4) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c4) / 2.0, 784 / 2.0 + 94.0*cos(c4) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c5) / 2.0, 784 / 2.0 + 86.0*cos(c5) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c5) / 2.0, 784 / 2.0 + 94.0*cos(c5) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c6) / 2.0, 784 / 2.0 + 86.0*cos(c6) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c6) / 2.0, 784 / 2.0 + 94.0*cos(c6) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c7) / 2.0, 784 / 2.0 + 86.0*cos(c7) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c7) / 2.0, 784 / 2.0 + 94.0*cos(c7) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c8) / 2.0, 784 / 2.0 + 86.0*cos(c8) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c8) / 2.0, 784 / 2.0 + 94.0*cos(c8) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c9) / 2.0, 784 / 2.0 + 86.0*cos(c9) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c9) / 2.0, 784 / 2.0 + 94.0*cos(c9) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c10) / 2.0, 784 / 2.0 + 86.0*cos(c10) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c10) / 2.0, 784 / 2.0 + 94.0*cos(c10) / 2.0, 132, 251, 169, 255);
+		DrawDot(8 + 1980 / 2.0 + 113.0 * sin(c11) / 2.0, 784 / 2.0 + 86.0*cos(c11) / 2.0, 8 + 1980 / 2.0 + 121.0*sin(c11) / 2.0, 784 / 2.0 + 94.0*cos(c11) / 2.0, 132, 251, 169, 255);
 		
 		
 		//LJQC: VVI display =======================================================================================================
@@ -627,49 +627,49 @@ int Render()
 		thousandVVI = floor(VVI / 1000.0 * 100.0f + 0.5) / 100.0f;
 		int VV2 = VVI;
 
-		RECT g_VVI2valuePosition = { 0, 0, 1980 - 133 + 40, 944 - 36 };
+		RECT g_VVI2valuePosition = { 0, 0, 16 + 1980 - 133 + 40, 944 - 36 };
 		std::ostringstream s560(VV2);
 		s560 << VV2;
 		pFont->DrawTextA(NULL, s560.str().c_str(), -1, &g_VVI2valuePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_VV2Position = { 0, 0, 1980 - 183 + 10, 944 - 36 };
+		RECT g_VV2Position = { 0, 0, 16 + 1980 - 183 + 10, 944 - 36 };
 		pFont->DrawText(NULL, L"VV", -1, &g_VV2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 
 
-		RECT g_VVIPosition = { 0, 0, 1980 - 83 + 10 + 2, 784 - 198 }; // VVI symbol position
+		RECT g_VVIPosition = { 0, 0, 16 + 1980 - 83 + 10 + 2, 784 - 198 }; // VVI symbol position
 		pFont->DrawText(NULL, L"< 0.00", -1, &g_VVIPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_VVIsym33Position = { 0, 0, 1980 - 83 + 10 - 26, 364 + 105 };
+		RECT g_VVIsym33Position = { 0, 0, 16 + 1980 - 83 + 10 - 26, 364 + 105 };
 		pFont->DrawText(NULL, L"VV", -1, &g_VVIsym33Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		if (num9 > -9 && num9 < 9)
 		{
-			RECT g_VVIsymPosition = { 0, 0, 1980 - 113 -10 - 2, 784 - 198 - num9 * 10.0 };
+			RECT g_VVIsymPosition = { 0, 0, 16 + 1980 - 113 - 10 - 2, 784 - 198 - num9 * 10.0 };
 			pFont->DrawText(NULL, L">", -1, &g_VVIsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-			RECT g_VVIvaluePosition = { 0, 0, 1980 - 133 - 49 - 2, 784 - 198 - num9 * 10.0 };
+			RECT g_VVIvaluePosition = { 0, 0, 16 + 1980 - 133 - 49 - 2, 784 - 198 - num9 * 10.0 };
 			std::ostringstream s11(thousandVVI);
 			s11 << thousandVVI;
 			pFont->DrawTextA(NULL, s11.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 		else if (num9 <= -9)
 		{
-			RECT g_VVIsymPosition = { 0, 0, 1980 - 113 - 10 - 2, 784 - 198 + 90.0 };
+			RECT g_VVIsymPosition = { 0, 0, 16 + 1980 - 113 - 10 - 2, 784 - 198 + 90.0 };
 			pFont->DrawText(NULL, L">", -1, &g_VVIsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-			RECT g_VVIvaluePosition = { 0, 0, 1980 - 133 - 49 - 2, 784 - 198 + 90.0 };
+			RECT g_VVIvaluePosition = { 0, 0, 16 + 1980 - 133 - 49 - 2, 784 - 198 + 90.0 };
 			std::ostringstream s11(thousandVVI);
 			s11 << thousandVVI;
 			pFont->DrawTextA(NULL, s11.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 		else if (num9 >= 9)
 		{
-			RECT g_VVIsymPosition = { 0, 0, 1980 - 113 - 10 - 2, 784 - 198 - 90.0 };
+			RECT g_VVIsymPosition = { 0, 0, 16 + 1980 - 113 - 10 - 2, 784 - 198 - 90.0 };
 			pFont->DrawText(NULL, L">", -1, &g_VVIsymPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-			RECT g_VVIvaluePosition = { 0, 0, 1980 - 133 - 49 - 2, 784 - 198 - 90.0 };
+			RECT g_VVIvaluePosition = { 0, 0, 16 + 1980 - 133 - 49 - 2, 784 - 198 - 90.0 };
 			std::ostringstream s11(thousandVVI);
 			s11 << thousandVVI;
 			pFont->DrawTextA(NULL, s11.str().c_str(), -1, &g_VVIvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -682,24 +682,24 @@ int Render()
 
 		Height = ALT - num11 * F16::meterToFoot;
 
-		RECT g_HeightvaluePosition = { 0, 0, 1980 - 133 + 40, 984 - 30 };
+		RECT g_HeightvaluePosition = { 0, 0, 16 + 1980 - 133 + 40, 984 - 30 };
 		std::ostringstream s12(Height);
 		s12 << Height;
 		pFont->DrawTextA(NULL, s12.str().c_str(), -1, &g_HeightvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_BAROPosition = { 0, 0, 1980 - 183 + 10, 984 - 30 };
+		RECT g_BAROPosition = { 0, 0, 16 + 1980 - 183 + 10, 984 - 30 };
 		pFont->DrawText(NULL, L"R", -1, &g_BAROPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		
 		//LJQC: Gun Cross & Accel Info Displays =================================================================================================
 
-		RECT g_CrossPosition = { 0, 0, 1350, 764}; //LJQC: Gun cross display
+		RECT g_CrossPosition = { 0, 0, 16 + 1350, 764 + displayY}; //LJQC: Gun cross display
 		pFont->DrawText(NULL, L"+", -1, &g_CrossPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_AccelxPosition = { 0, 0, 1365 + num10 * 5, 764 - pAccelx * 25 };
+		RECT g_AccelxPosition = { 0, 0, 16 + 1365 + num10 * 5, 764 - pAccelx * 25 + displayY / 1.0 };
 		pFont->DrawText(NULL, L"<", -1, &g_AccelxPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_pAccelPosition = { 0, 0, 1335 - num10 * 5, 764 - pAccelx * 25 };
+		RECT g_pAccelPosition = { 0, 0, 16 + 1335 - num10 * 5, 764 - pAccelx * 25 + displayY / 1.0 };
 		pFont->DrawText(NULL, L">", -1, &g_pAccelPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
@@ -725,27 +725,27 @@ int Render()
 
 		headingdisplay = heading;//headingdisplay = heading;
 
-		RECT g_headingvaluePosition = { 0, 0, 1350, 279 + 109 };
+		RECT g_headingvaluePosition = { 0, 0, 16 + 1350, 279 + 109 };
 		std::ostringstream s13(headingdisplay);
 		s13 << headingdisplay;
 		pFont->DrawTextA(NULL, s13.str().c_str(), -1, &g_headingvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-		RECT g_DeltasymbolPosition = { 0, 0, 1350, 304 + 109 };
+		RECT g_DeltasymbolPosition = { 0, 0, 16 + 1350, 304 + 109 };
 		pFont->DrawText(NULL, L"┯", -1, &g_DeltasymbolPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		if (ladder == TRUE)
 		{
-			DrawLine(1125 / 2.0, (320 + 105) / 2.0, 1575 / 2.0, (320 + 105) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + 1125 / 2.0, (320 + 105) / 2.0, 8 + 1575 / 2.0, (320 + 105) / 2.0, 132, 251, 169, 255);
 			//1
 			if (North >= -75 && North <= 75)
 			{
-				RECT g_DeltasymbolNPosition = { 0, 0, 1350 + North*3.0, 334 + 105 };
+				RECT g_DeltasymbolNPosition = { 0, 0, 16 + 1350 + North*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 			
 				if (headingmodifier2 >= 360) headingmodifier2 -= 360;
 				else if (headingmodifier2 < 0) headingmodifier2 += 360;
 
-				RECT g_DeltasymbolN2Position = { 0, 0, 1350 + North*3.0, 364 + 105 };
+				RECT g_DeltasymbolN2Position = { 0, 0, 16 + 1350 + North*3.0, 364 + 105 };
 				std::ostringstream s553(headingmodifier2);
 				s553 << headingmodifier2;
 				pFont->DrawTextA(NULL, s553.str().c_str(), -1, &g_DeltasymbolN2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -754,13 +754,13 @@ int Render()
 			//2
 			if (East >= -75 && East <= 75)
 			{
-				RECT g_DeltasymbolEPosition = { 0, 0, 1350 + East*3.0, 334 + 105 };
+				RECT g_DeltasymbolEPosition = { 0, 0, 16 + 1350 + East*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolEPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 				if (headingmodifier3 >= 360) headingmodifier3 -= 360;
 				else if (headingmodifier3 < 0) headingmodifier3 += 360;
 
-				RECT g_DeltasymbolE2Position = { 0, 0, 1350 + East*3.0, 364 + 105 };
+				RECT g_DeltasymbolE2Position = { 0, 0, 16 + 1350 + East*3.0, 364 + 105 };
 				std::ostringstream s554(headingmodifier3);
 				s554 << headingmodifier3;
 				pFont->DrawTextA(NULL, s554.str().c_str(), -1, &g_DeltasymbolE2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -770,13 +770,13 @@ int Render()
 			if (South >= -75 && South <= 75)
 			{
 				//3
-				RECT g_DeltasymbolSPosition = { 0, 0, 1350 + South*3.0, 334 + 105 };
+				RECT g_DeltasymbolSPosition = { 0, 0, 16 + 1350 + South*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolSPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 				if (headingmodifier4 >= 360) headingmodifier4 -= 360;
 				else if (headingmodifier4 < 0) headingmodifier4 += 360;
 
-				RECT g_DeltasymbolS2Position = { 0, 0, 1350 + South*3.0, 364 + 105 };
+				RECT g_DeltasymbolS2Position = { 0, 0, 16 + 1350 + South*3.0, 364 + 105 };
 				std::ostringstream s555(headingmodifier4);
 				s555 << headingmodifier4;
 				pFont->DrawTextA(NULL, s555.str().c_str(), -1, &g_DeltasymbolS2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -786,13 +786,13 @@ int Render()
 			if (West >= -75 && West <= 75)
 			{
 				//4
-				RECT g_DeltasymbolWPosition = { 0, 0, 1350 + West*3.0, 334 + 105 };
+				RECT g_DeltasymbolWPosition = { 0, 0, 16 + 1350 + West*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolWPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 				if (headingmodifier5 >= 360) headingmodifier5 -= 360;
 				else if (headingmodifier5 < 0) headingmodifier5 += 360;
 
-				RECT g_DeltasymbolW2Position = { 0, 0, 1350 + West*3.0, 364 + 105 };
+				RECT g_DeltasymbolW2Position = { 0, 0, 16 + 1350 + West*3.0, 364 + 105 };
 				std::ostringstream s556(headingmodifier5);
 				s556 << headingmodifier5;
 				pFont->DrawTextA(NULL, s556.str().c_str(), -1, &g_DeltasymbolW2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -802,13 +802,13 @@ int Render()
 			if (Close1 >= -75 && Close1 <= 75)
 			{
 				//5
-				RECT g_DeltasymbolNPosition2 = { 0, 0, 1350 + Close1*3.0, 334 + 105 };
+				RECT g_DeltasymbolNPosition2 = { 0, 0, 16 + 1350 + Close1*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition2, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 				if (headingmodifier >= 360) headingmodifier -= 360;
 				else if (headingmodifier < 0) headingmodifier += 360;
 
-				RECT g_DeltasymbolN2Position2 = { 0, 0, 1350 + Close1*3.0, 364 + 105 };
+				RECT g_DeltasymbolN2Position2 = { 0, 0, 16 + 1350 + Close1*3.0, 364 + 105 };
 				std::ostringstream s557(headingmodifier);
 				s557 << headingmodifier;
 				pFont->DrawTextA(NULL, s557.str().c_str(), -1, &g_DeltasymbolN2Position2, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -817,13 +817,13 @@ int Render()
 			if (Close2 >= -75 && Close2 <= 75)
 			{
 				//5
-				RECT g_DeltasymbolNPosition3 = { 0, 0, 1350 + Close2*3.0, 334 + 105 };
+				RECT g_DeltasymbolNPosition3 = { 0, 0, 16 + 1350 + Close2*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition3, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 				if (headingmodifier6 >= 360) headingmodifier6 -= 360;
 				else if (headingmodifier6 < 0) headingmodifier6 += 360;
 
-				RECT g_DeltasymbolN2Position4 = { 0, 0, 1350 + Close2*3.0, 364 + 105 };
+				RECT g_DeltasymbolN2Position4 = { 0, 0, 16 + 1350 + Close2*3.0, 364 + 105 };
 				std::ostringstream s558(headingmodifier6);
 				s558 << headingmodifier6;
 				pFont->DrawTextA(NULL, s558.str().c_str(), -1, &g_DeltasymbolN2Position4, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -832,13 +832,13 @@ int Render()
 			if (Close3 >= -75 && Close3 <= 75)
 			{
 				//5
-				RECT g_DeltasymbolNPosition5 = { 0, 0, 1350 + Close3*3.0, 334 + 105 };
+				RECT g_DeltasymbolNPosition5 = { 0, 0, 16 + 1350 + Close3*3.0, 334 + 105 };
 				pFont->DrawText(NULL, L"|", -1, &g_DeltasymbolNPosition5, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 				if (headingmodifier7 >= 360) headingmodifier7 -= 360;
 				else if (headingmodifier7 < 0) headingmodifier7 += 360;
 
-				RECT g_DeltasymbolN2Position6 = { 0, 0, 1350 + Close3*3.0, 364 + 105 };
+				RECT g_DeltasymbolN2Position6 = { 0, 0, 16 + 1350 + Close3*3.0, 364 + 105 };
 				std::ostringstream s559(headingmodifier7);
 				s559 << headingmodifier7;
 				pFont->DrawTextA(NULL, s559.str().c_str(), -1, &g_DeltasymbolN2Position6, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
@@ -848,11 +848,11 @@ int Render()
 		//LJQC: FPM display====================================================================================================
 
 
-		RECT g_FPMPosition = { 0, 0, 1350 + Beta * 25.0, 764 + b * 25.0 }; 
+		RECT g_FPMPosition = { 0, 0, 16 + 1350 + Beta * 25.0, 764 + b * 25.0 + displayY };
 		pFont->DrawText(NULL, L"O", -1, &g_FPMPosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
-		RECT g_FPM2Position = { 0, 0, 1333.5 + Beta * 25.0, 760 + b * 25.0 }; 
+		RECT g_FPM2Position = { 0, 0, 16 + 1333.5 + Beta * 25.0, 760 + b * 25.0 + displayY };
 		pFont->DrawText(NULL, L"-", -1, &g_FPM2Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
-		RECT g_FPM3Position = { 0, 0, 1365 + Beta * 25.0, 760 + b * 25.0 }; 
+		RECT g_FPM3Position = { 0, 0, 16 + 1365 + Beta * 25.0, 760 + b * 25.0 + displayY };
 		pFont->DrawText(NULL, L"-", -1, &g_FPM3Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		//LJQC: AOA Bracket display===============================================================================================
@@ -861,19 +861,19 @@ int Render()
 
 		if (quaternionz == TRUE)
 		{
-			DrawLine((1310 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0, (1310 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
-			DrawLine((1310 + Beta * 25.0) / 2.0, (760 + b * 25.0 + alphaa) / 2.0, (1330 + Beta * 25.0) / 2.0, (760 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1310 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 8 + (1310 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1310 + Beta * 25.0) / 2.0, (760 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 8 + (1330 + Beta * 25.0) / 2.0, (760 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1310 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0, (1330 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
-			DrawLine((1310 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0, (1330 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1310 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 8 + (1330 + Beta * 25.0) / 2.0, (720 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1310 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 8 + (1330 + Beta * 25.0) / 2.0, (800 + b * 25.0 + alphaa) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 		}
 
 		num7 = (quaternionw * F16::radiansToDegrees) / 9.0; // = (Bank angle / 9.0)
 
 		//LJQC: Pitch ladder horizon line =====================================================================================
 		pitchangle = atan(num8) * 180.0 / M_PI;
-		DrawLine((1350 + Beta * 25.0 + 30.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 30.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 400.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 400.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-		DrawLine((1350 + Beta * 25.0 - 30.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 30.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 400.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 400.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + (1350 + Beta * 25.0 + 30.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 30.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 400.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 400.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+		DrawLine(8 + (1350 + Beta * 25.0 - 30.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 30.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 400.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 400.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
 
 		if (ladder == TRUE)
@@ -893,13 +893,13 @@ int Render()
 
 			//LJQC: Pitch ladder 10 =====================================================================================
 			double pitchangle10 = pitchangle - 10.0;
-			DrawLine((1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladder10R = { 0, 0, (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder10R = { 0, 0, 16 + (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle10 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"10", -1, &ladder10R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 			/*
@@ -917,139 +917,144 @@ int Render()
 
 			//LJQC: Pitch ladder 20 =====================================================================================
 			pitchangle20 = pitchangle - 20.0;
-			DrawLine((1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle20 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladder20R = { 0, 0, (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder20R = { 0, 0, 16 + (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle20 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"20", -1, &ladder20R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 			//LJQC: Pitch ladder 30 =====================================================================================
 			double pitchangle30 = pitchangle - 30.0;
-			DrawLine((1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladder30R = { 0, 0, (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder30R = { 0, 0, 16 + (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle30 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"30", -1, &ladder30R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 			//LJQC: Pitch ladder 40 =====================================================================================
 			pitchangle40 = pitchangle - 40.0;
-			DrawLine((1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle40 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
 
-			RECT ladder40R = { 0, 0, (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder40R = { 0, 0, 16 + (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle40 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"40", -1, &ladder40R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 			//LJQC: Pitch ladder 60 =====================================================================================
 			pitchangle602 = pitchangle - 60.0;
-			DrawLine((1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle602 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladder602R = { 0, 0, (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder602R = { 0, 0, 16 + (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle602 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"60", -1, &ladder602R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 			//LJQC: Pitch ladder 80 =====================================================================================
 			pitchangle802 = pitchangle - 80.0;
-			DrawLine((1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle802 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladder802R = { 0, 0, (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder802R = { 0, 0, 16 + (1350 + Beta * 25.0 - 169.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 0.7) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 169.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle802 + 0.7) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"80", -1, &ladder802R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
-
-
+			//LJQC: Pitch ladder -3 when Landing Gear Down =====================================================================================
+			if (quaternionz == TRUE)
+			{
+				double pitchanglem3 = pitchangle + 3.0;
+				DashedLine(8 + (1350 + Beta * 25.0 + 35.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 35.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+				DashedLine(8 + (1350 + Beta * 25.0 - 35.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 35.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 100.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 100.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem3 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			}
 
 			//LJQC: Pitch ladder -10 =====================================================================================
 			double pitchanglem10 = pitchangle + 10.0;
-			DashedLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DashedLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem10 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladderm10R = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladderm10R = { 0, 0, 16 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem10 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"-10", -1, &ladderm10R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 			//LJQC: Pitch ladder -20 =====================================================================================
 			pitchangle60 = pitchangle + 20.0;
-			DashedLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DashedLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
 			
 
-			RECT ladder60R = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladder60R = { 0, 0, 16 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle60 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"-20", -1, &ladder60R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 			//LJQC: Pitch ladder -30 =====================================================================================
 			double  pitchanglem30 = pitchangle + 30.0;
-			DashedLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DashedLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchanglem30 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
 
 
-			RECT ladderm30R = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladderm30R = { 0, 0, 16 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchanglem30 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"-30", -1, &ladderm30R, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 			//LJQC: Pitch ladder -40 =====================================================================================
 			pitchangle80 = pitchangle + 40.0;
-			DashedLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DashedLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangle80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			RECT ladderminus40number = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladderminus40number = { 0, 0, 16 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangle80 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"-40", -1, &ladderminus40number, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 			//LJQC: Pitch ladder -60 =====================================================================================
 			pitchangleminus60 = pitchangle + 60.0;
-			DashedLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DashedLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus60 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 			
 
-			RECT ladderminus60number = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladderminus60number = { 0, 0, 16 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus60 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"-60", -1, &ladderminus60number, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 
 			//LJQC: Pitch ladder -80 =====================================================================================
 			pitchangleminus80 = pitchangle + 80.0;
-			DashedLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DashedLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DashedLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 200.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 200.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 
-			DrawLine((1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
-			DrawLine((1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 + 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 - 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
+			DrawLine(8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + pitchangleminus80 * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 8 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 2.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.0) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 2.0 + displayY / 2.0, 132, 251, 169, 255);
 			
 
-			RECT ladderminus80number = { 0, 0, (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 };
+			RECT ladderminus80number = { 0, 0, 16 + (1350 + Beta * 25.0 - 85.0 * cos(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.3) * 25.0 * sin(num7 * 9.0 * M_PI / 180.0)) / 1.0, (764 + b * 25.0 + 85.0 * sin(num7 * 9.0 * M_PI / 180.0) + (pitchangleminus80 - 1.3) * 25.0 * cos(num7 * 9.0 * M_PI / 180.0) - 4) / 1.0 + displayY / 1.0 };
 			pFont->DrawText(NULL, L"-80", -1, &ladderminus80number, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 
 		//}
@@ -1114,7 +1119,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 DWORD WINAPI InputThread(LPVOID lpParam)
 {
-	    Sleep(20*1000);
+	    Sleep(2000);
 
 		wchar_t *pString = reinterpret_cast<wchar_t *> (lpParam);
 		RegisterDLLWindowClass(L"A");
@@ -1130,6 +1135,40 @@ DWORD WINAPI InputThread(LPVOID lpParam)
 
 		for (;;)
 		{
+			//LJQC: Key functions here:===================================================================================================
+			if (GetAsyncKeyState(0x44) & 0x8000) autopilot = 1;
+			else if (GetAsyncKeyState(0x44) == 0) autopilot = 0;
+
+			if (GetAsyncKeyState(0x46) & 1) //ALT Flaps Switch: Press "F"
+			{
+				ALTflaps = ALTflaps + 1;
+				if (ALTflaps > 1) ALTflaps = 0;
+			}
+
+			if (GetAsyncKeyState(0x53) & 0x8000) directmode = 1;
+			else if (GetAsyncKeyState(0x53) == 0) directmode = 0;
+
+			if (GetAsyncKeyState(0x54) & 1) TVC = !TVC;
+
+			if (GetAsyncKeyState(0x4D) & 1) HMCS = !HMCS;
+
+
+			if (GetAsyncKeyState(0x43) & 1) CATI = !CATI;
+
+			if (GetAsyncKeyState(0x50) & 1) ladder = !ladder;
+
+			//HMCS position debug:
+			//if (GetAsyncKeyState(VK_UP) & 1) displayY = displayY + 1;
+			//if (GetAsyncKeyState(VK_DOWN) & 1) displayY = displayY - 1;
+			if (GetAsyncKeyState(VK_LEFT) & 1) displayX = displayX - 0.1;
+			if (GetAsyncKeyState(VK_RIGHT) & 1) displayX = displayX + 0.1;
+			if (GetAsyncKeyState(0x21) & 1) displayZ += 0.1;
+			if (GetAsyncKeyState(0x22) & 1) displayZ -= 0.1;
+			//if (GetAsyncKeyState(VK_OEM_COMMA) & 1) displayW += 0.1;
+			//if (GetAsyncKeyState(VK_OEM_PERIOD) & 1) displayW -= 0.1;
+			if (GetAsyncKeyState(0x76) & 1) displayC += 0.1;
+			if (GetAsyncKeyState(0x74) & 1) displayC -= 0.1;
+
 			if (HMCS == TRUE)
 			{
 				if (PeekMessage(&Message, hWnd, 0, 0, PM_REMOVE))
@@ -1823,41 +1862,6 @@ namespace F16
 				longStickInputForce2 = longStickInput * 180.0;
 			}
 
-			//LJQC: Key functions here:===================================================================================================
-			if (GetAsyncKeyState(0x44) & 0x8000) autopilot = 1;
-			else if (GetAsyncKeyState(0x44) == 0) autopilot = 0;
-
-			if (GetAsyncKeyState(0x46) & 1) //ALT Flaps Switch: Press "F"
-			{
-				ALTflaps = ALTflaps + 1;
-				if (ALTflaps > 1) ALTflaps = 0;
-			}
-
-			if (GetAsyncKeyState(0x53) & 0x8000) directmode = 1;
-			else if (GetAsyncKeyState(0x53) == 0) directmode = 0;
-
-			if (GetAsyncKeyState(0x54) & 1) TVC = !TVC;
-
-			if (GetAsyncKeyState(0x4D) & 1) HMCS = !HMCS;
-
-
-			if (GetAsyncKeyState(0x43) & 1) CATI = !CATI;
-
-			if (GetAsyncKeyState(0x50) & 1) ladder = !ladder;
-
-			//HMCS position debug:
-			if (GetAsyncKeyState(VK_UP) & 1) displayY = displayY + 0.1;
-			if (GetAsyncKeyState(VK_DOWN) & 1) displayY = displayY - 0.1;
-			if (GetAsyncKeyState(VK_LEFT) & 1) displayX = displayX - 0.1;
-			if (GetAsyncKeyState(VK_RIGHT) & 1) displayX = displayX + 0.1;
-			if (GetAsyncKeyState(0x21) & 1) displayZ +=  0.1;
-			if (GetAsyncKeyState(0x22) & 1) displayZ -=  0.1;
-			//if (GetAsyncKeyState(VK_OEM_COMMA) & 1) displayW += 0.1;
-			//if (GetAsyncKeyState(VK_OEM_PERIOD) & 1) displayW -= 0.1;
-			if (GetAsyncKeyState(0x76) & 1) displayC += 0.1;
-			if (GetAsyncKeyState(0x74) & 1) displayC -= 0.1;
-
-			//dele = finalPitchCommandTotal;
 
 
 			//LJQC: MPO fuctions here:=====================================================================================================

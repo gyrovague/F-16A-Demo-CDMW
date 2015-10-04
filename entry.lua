@@ -253,6 +253,9 @@ local FM =
 	suspension   		= suspension, -- gear posts initialization
 }
 
+dofile(current_mod_path.."/Views.lua")
+make_view_settings('F-16Demo', ViewSettings, SnapViews)
+
 --make_flyable(obj_name,optional_cockpit path,optional_fm = {mod_of_fm_origin,dll_with_fm})
 --make_flyable('F-16Demo', nil, FM, nil)
 local support_cockpit = current_mod_path..'/Cockpit/'
