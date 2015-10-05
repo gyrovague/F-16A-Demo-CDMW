@@ -159,7 +159,11 @@ namespace F16
 	bool        canopy = TRUE;
 	bool        geardown2 = FALSE;
 	bool        CATIII;
+	bool        CATIII3;
+	int        brake3333;
+	bool        canopy3;
 	double      Speeeeed;
+	bool        canopy22;
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -284,6 +288,8 @@ void ed_fm_simulate(double dt)
 	
 	F16::dele = F16::FlightControls.getdele(F16::Engine.getUFOstate());
 
+	F16::brake3333 = F16::Motion.getbrake3(F16::Engine.getUFOstate());
+
 	F16::Electrics.updateFrame(frametime);
 	F16::Airframe.updateFrame(frametime);
 
@@ -360,14 +366,14 @@ void ed_fm_simulate(double dt)
 	//if (F16::LandingGear.isWoW() == true)
 	//{
 		// TODO: this is not working correctly at the moment, disabled for now
-		/*
+		
 		F16::Motion.updateWheelForces(F16::LandingGear.wheelLeft.CxWheelFriction,
 									F16::LandingGear.wheelLeft.CyWheelFriction,
 									F16::LandingGear.wheelRight.CxWheelFriction,
 									F16::LandingGear.wheelRight.CyWheelFriction,
 									F16::LandingGear.wheelNose.CxWheelFriction,
 									F16::LandingGear.wheelNose.CyWheelFriction);
-									*/
+									
 		// use free-rolling friction as single unit for now
 		// TODO: nose-wheel steering, braking forces etc.
 
@@ -415,7 +421,7 @@ void ed_fm_set_surface (double		h,//surface height under the center of aircraft
 		F16::num11 = F16::FlightControls.getnumber11(h_obj);
 
 		F16::CATIII = F16::Engine.getCATI(F16::FlightControls.getCAT());
-		
+		F16::CATIII3 = F16::Motion.getCATI3(F16::FlightControls.getCAT());
 		// in ground effect with the surface?
 		// flying above ground, no weight on wheels?
 	}
@@ -486,10 +492,14 @@ void ed_fm_set_current_state (double ax,//linear acceleration component in world
 
 	F16::quaternionz = F16::FlightControls.getquaternionz(F16::geardown);
 
-	F16::geardown2 = F16::Engine.getCstate(F16::canopy);
+	F16::geardown2 = F16::Engine.getCstate(F16::canopy);//==========================
 
-	if (F16::canopy == TRUE) F16::Airframe.setCanopyClosed();
-	else if (F16::canopy == FALSE) F16::Airframe.setCanopyGone();
+	F16::canopy22 = F16::FlightControls.getcanopystate(F16::canopy);
+
+	F16::canopy3 = F16::Motion.getcanopy3(F16::canopy);
+
+	//if (F16::canopy == TRUE) F16::Airframe.setCanopyClosed();
+	//else if (F16::canopy == FALSE) F16::Airframe.setCanopyGone();
 }
 
 void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration component in body coordinate system (meters/sec^2)

@@ -377,7 +377,7 @@ namespace F16
 		
 		if (Speeeeeeeeed > 0)
 		{
-			if (UFO == TRUE && Cstate == FALSE && CATI2 == FALSE)  Tidle = -94976.0;
+			if (UFO == TRUE && Cstate == FALSE && CATI2 == FALSE)  Tidle = -949760.0;
 			else if (UFO == TRUE && Cstate == FALSE && CATI2 == TRUE) Tidle = -34976.0;
 			else if (UFO == TRUE && Cstate == TRUE)  Tidle = -34976.0;
 			else Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
