@@ -13,9 +13,9 @@
 
 namespace F16
 {
-	int brake3;
-	bool CATI3;
-	bool Cstate3;
+	//int brake3;
+	//bool CATI3;
+	//bool Cstate3;
 
 
 	class F16Motion
@@ -129,7 +129,7 @@ namespace F16
 
 		
 
-
+		/*
 		bool getCATI3(bool CATI13)
 		{
 			CATI3 = CATI13;
@@ -147,7 +147,7 @@ namespace F16
 			Cstate3 = ccccccc;
 			return Cstate3;
 		}
-
+		*/
 
 		//====================================================================================================
 
@@ -305,7 +305,7 @@ namespace F16
 		// TODO: nose-wheel steering angle, braking forces
 		void updateWheelForces(double leftWheelXFriction, double leftWheelYFriction, double rightWheelXFriction, double rightWheelYFriction, double noseWheelXFriction, double noseWheelYFriction)
 		{
-			if (Cstate3 == TRUE && CATI3 == FALSE && (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000))
+			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)
 			{
 
 				// TODO: offset pos of each wheel,
@@ -321,7 +321,7 @@ namespace F16
 				add_local_force_cg(Vec3(2000.0, 0.0,0.0) /*, Vec3(rightWheelXFriction,0.0,0.0)*/);
 				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0.0,0.0,rightWheelYFriction)*/);
 			}
-			if (Cstate3 == TRUE && CATI3 == FALSE && (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000))
+			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
 			{
 
 				add_local_force_cg(Vec3(-5000.0, 0.0, 0.0));//add_local_force_cg(Vec3(-6000.0, 0.0, 0.0));
@@ -339,7 +339,7 @@ namespace F16
 		// free-rolling friction
 		void updateRollingFriction(const double CxWheelFriction, const double CyWheelFriction)
 		{
-			if (Cstate3 == TRUE && CATI3 == FALSE && (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000))
+			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)
 			{
 				// TODO: must have support for static friction: engine power needed to overcome and transfer to rolling
 
@@ -362,7 +362,7 @@ namespace F16
 				// test, skip some things for now
 				sum_vec3(common_force, cy_wheel_friction_force);
 			}
-			if (Cstate3 == TRUE && CATI3 == FALSE && (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000))
+			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
 			{
 				
 
@@ -382,7 +382,7 @@ namespace F16
 		// handle brake input (differential support)
 		void updateBrakingFriction(const double leftCxWheelFriction, const double rightCxWheelFriction)
 		{
-			if (Cstate3 == TRUE && CATI3 == FALSE && (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000))
+			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)
 			{
 				// TODO: lua has this definition, check our values in calculations 
 				//wheel_brake_moment_max = 15000.0, -- maximum value of braking moment  , N*m 
@@ -432,7 +432,7 @@ namespace F16
 				add_local_force(cxl_wheel_friction_force, cxl_wheel_friction_pos);
 				
 			}
-			if (Cstate3 == TRUE && CATI3 == FALSE && (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000))
+			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
 			{
 				
 
@@ -449,11 +449,8 @@ namespace F16
 		// something like this to handle when nosewheel is turned?
 		void updateNoseWheelTurn(const Vec3 &nosewheelDirection, const double turnAngle)
 		{
-			if (Cstate3 == FALSE && CATI3 == FALSE)
-			{
-				Vec3 cx_wheel_pos(5.0,0.0,0.0); // TODO: check offset!
-				add_local_force(nosewheelDirection, cx_wheel_pos);
-			}
+				//Vec3 cx_wheel_pos(5.0,0.0,0.0); // TODO: check offset!
+				//add_local_force(nosewheelDirection, cx_wheel_pos);
 		}
 
 		// 

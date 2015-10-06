@@ -58,8 +58,10 @@ namespace F16
 	double Tmax;
 	double Tidle;
 	bool UFO = FALSE; //LJQC: Speed Brake Hack
-	bool CATI2;
+	//bool CATI2;
 	double Speeeeeeeeed;
+	double CompressE;
+	double CompressF;
 
 	class F16Engine
 	{
@@ -101,7 +103,7 @@ namespace F16
 		bool stopping; // "spooling down"
 
 		bool isIgnited; // if it is really running or just rotating from airflow? (out of fuel mid-air?)
-		bool Cstate;
+		bool Cstate; //False = Hook down or LBAR down
 
 		F16Engine() 
 			: m_power3(0)
@@ -192,18 +194,30 @@ namespace F16
 				return 1;
 			}
 		}
-
+		/*
 		bool getCATI(bool CAT)
 		{
 			CATI2 = CAT;
 			return CATI2;
 		}
-
+		*/
 		double getSpeeeed(double bb)
 		{
 			Speeeeeeeeed = bb;
 			return Speeeeeeeeed;
 
+		}
+
+		double getCompressE(double coma)
+		{
+			CompressE = coma;
+			return CompressE;
+		}
+
+		double getCompressF(double comf)
+		{
+			CompressF = comf;
+			return CompressF;
 		}
 
 		bool getCstate(bool a)
@@ -375,11 +389,10 @@ namespace F16
 		else if (UFO == TRUE) machLimited = limit(mach, 0.2, 0.6);
 
 		
-		if (Speeeeeeeeed > 0)
+		if (Speeeeeeeeed > -5)
 		{
-			if (UFO == TRUE && Cstate == FALSE && CATI2 == FALSE)  Tidle = -949760.0;
-			else if (UFO == TRUE && Cstate == FALSE && CATI2 == TRUE) Tidle = -34976.0;
-			else if (UFO == TRUE && Cstate == TRUE)  Tidle = -34976.0;
+			if ((CompressE > 0 && Cstate == FALSE) || (CompressF > 0 && Cstate == FALSE))  Tidle = -949760.0;
+			else if (UFO == TRUE) Tidle = -34976.0;
 			else Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
 		}
 		else Tidle = 0;
@@ -388,9 +401,8 @@ namespace F16
 		else if (UFO == TRUE) Tmil = (-25958.0 * pow(machLimited, 3.0) + 34336.0 * pow(machLimited, 2.0) - 14575.0 * machLimited + 58137.0) + (altTemp2 * -42000.0) - 54976.0;
 
 
-		if (UFO == TRUE && Cstate == FALSE && CATI2 == FALSE) Tmax = (4270200.0 * pow(machLimited, 2.0) + 866100.4 * machLimited + 9275600.0) + (altTemp2 * -100000.0);
-		else if (UFO == TRUE && Cstate == FALSE && CATI2 == TRUE) Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0) - 10445.0;
-		else if (UFO == TRUE && Cstate == TRUE) Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0) - 10445.0;
+		if ((CompressE > 0 && Cstate == FALSE) || (CompressF > 0 && Cstate == FALSE)) Tmax = (4270200.0 * pow(machLimited, 2.0) + 866100.4 * machLimited + 9275600.0) + (altTemp2 * -100000.0);
+		else if (UFO == TRUE) Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0) - 10445.0;
 		else  Tmax = (42702.0 * pow(machLimited, 2.0) + 8661.4 * machLimited + 92756.0) + (altTemp2 * -100000.0);
 
 		if(m_power3 < 50.0)

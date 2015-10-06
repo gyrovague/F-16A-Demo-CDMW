@@ -49,6 +49,7 @@ double      rollrate;//rollrate for EEGS calculation
 double      pitchrate;//pitchrate for EEGS calculation
 double      yawrate;//pitchrate for EEGS calculation
 bool       canopystate;//Hook
+//double     CompressF;//get wheel compression for debug
 
 
 
@@ -487,7 +488,7 @@ int Render()
 		if (canopystate == FALSE) //LJQC: Speed Brake Display
 		{
 			RECT g_UFO22Position = { 0, 0, 16 + 1860, 1224 - 30 };
-			pFont->DrawText(NULL, L"HOOK", -1, &g_UFO22Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+			pFont->DrawText(NULL, L"HOOK/LBAR", -1, &g_UFO22Position, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		}
 
 
@@ -527,10 +528,10 @@ int Render()
 		//LJQC: Values for debug only===================================================================================
 		/*
 		RECT g_PITCHtrimsvaluePosition = { 0, 0, 850, 800 };
-		std::ostringstream s19(displayX);
-		s19 << displayX;
+		std::ostringstream s19(CompressF);
+		s19 << CompressF;
 		pFont->DrawTextA(NULL, s19.str().c_str(), -1, &g_PITCHtrimsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
-
+		
 		RECT g_PITCHoutputsvaluePosition = { 0, 0, 25 + 850, 840 };
 		std::ostringstream s20(displayY);
 		s20 << displayY;
@@ -1893,7 +1894,13 @@ namespace F16
 			quaternionw = quaternion_w;
 			return quaternionw;
 		}
-
+		/*
+		double getCompressF(double comf) //for debug
+		{
+			CompressF = comf;
+			return CompressF;
+		}
+		*/
 		int getdele(int de)
 		{
 			dele = de;
