@@ -389,11 +389,23 @@ namespace F16
 		else if (UFO == TRUE) machLimited = limit(mach, 0.2, 0.6);
 
 		
-		if (Speeeeeeeeed > -5)
+		if (Speeeeeeeeed > 6)
 		{
 			if ((CompressE > 0 && Cstate == FALSE) || (CompressF > 0 && Cstate == FALSE))  Tidle = -949760.0;
 			else if (UFO == TRUE) Tidle = -34976.0;
 			else Tidle = (-24976.0 * machLimited + 9091.5) + (altTemp * 12000.0);
+		}
+		else if (Speeeeeeeeed <= 6 && Speeeeeeeeed > 0)
+		{
+			if ((CompressE > 0 && Cstate == FALSE) || (CompressF > 0 && Cstate == FALSE))  Tidle = -15000.0;
+			else if (UFO == TRUE) Tidle = -20000.0;
+			else Tidle = 0;
+		}
+		else if (Speeeeeeeeed <= 0 && Speeeeeeeeed > -6)
+		{
+			if ((CompressE > 0 && Cstate == FALSE) || (CompressF > 0 && Cstate == FALSE))  Tidle = 0;
+			else if (UFO == TRUE) Tidle = -10000.0;
+			else Tidle = 0;
 		}
 		else Tidle = 0;
 

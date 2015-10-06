@@ -316,17 +316,17 @@ namespace F16
 				// TODO: debug: check force direction!
 				// check reduction in kinetic energy per wheel
 				// and check that we don't underflow..
-				add_local_force_cg(Vec3(2000.0, 0.0,0.0) /*, Vec3(leftWheelXFriction,0.0,0.0)*/);
-				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0.0,0.0,leftWheelYFriction)*/);
-				add_local_force_cg(Vec3(2000.0, 0.0,0.0) /*, Vec3(rightWheelXFriction,0.0,0.0)*/);
-				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0.0,0.0,rightWheelYFriction)*/);
+				add_local_force_cg(Vec3(-2000.0, 0.0,0.0) /*, Vec3(2000,0,0)*/);
+				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0,0,6000)*/);
+				add_local_force_cg(Vec3(0.0, 0.0,0.0) /*, Vec3(2000,0.0,0.0)*/);
+				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0.0,0.0,6000)*/);
 			}
 			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
 			{
 
-				add_local_force_cg(Vec3(-5000.0, 0.0, 0.0));//add_local_force_cg(Vec3(-6000.0, 0.0, 0.0));
+				add_local_force_cg(Vec3(-9000.0, 0.0, 0.0));//add_local_force_cg(Vec3(-5000.0, 0.0, 0.0));
 				add_local_force_cg(Vec3(0.0, 0.0, -6000.0));
-				add_local_force_cg(Vec3(0.0, 0.0, 0.0));//add_local_force_cg(Vec3(-6000.0, 0.0, 0.0));
+				add_local_force_cg(Vec3(0.0, 0.0, 0.0));//add_local_force_cg(Vec3(0.0, 0.0, 0.0));
 				add_local_force_cg(Vec3(0.0, 0.0, -6000.0));
 			}
 		}
@@ -343,12 +343,12 @@ namespace F16
 			{
 				// TODO: must have support for static friction: engine power needed to overcome and transfer to rolling
 
-				Vec3 cx_wheel_friction_force(2000.0, 0.0, 0.0);//Vec3 cx_wheel_friction_force(6000.0, 0.0,0.0);
+				Vec3 cx_wheel_friction_force(-2000.0, 0.0, 0.0);//Vec3 cx_wheel_friction_force(2000.0, 0.0,0.0);
 				Vec3 cx_wheel_friction_pos(0.0,0.0,0.0);
 				//add_local_force_cg(cx_wheel_friction_force, cx_wheel_friction_pos);
 
 				// test, skip some things for now
-				sum_vec3(common_force, Vec3(2000.0, 0.0, 0.0));//sum_vec3(common_force, Vec3(6000.0, 0.0,0.0));
+				sum_vec3(common_force, Vec3(2000.0, 0.0, 0.0));//sum_vec3(common_force, Vec3(2000.0, 0.0,0.0));
 				// -> actually need to reduce this from _moment_ not add opposite force?
 
 
@@ -366,10 +366,10 @@ namespace F16
 			{
 				
 
-				Vec3 cx_wheel_friction_force(-5000.0, 0.0, 0.0);//Vec3 cx_wheel_friction_force(-6000.0, 0.0, 0.0);
+				Vec3 cx_wheel_friction_force(-9000.0, 0.0, 0.0);//Vec3 cx_wheel_friction_force(-5000.0, 0.0, 0.0);
 				Vec3 cx_wheel_friction_pos(0.0, 0.0, 0.0);
 				
-				sum_vec3(common_force, Vec3(0.0, 0.0, 0.0));//sum_vec3(common_force, Vec3(-6000.0, 0.0, 0.0));
+				sum_vec3(common_force, Vec3(0.0, 0.0, 0.0));//sum_vec3(common_force, Vec3(0.0, 0.0, 0.0));
 				
 				Vec3 cy_wheel_friction_force(0.0, 0.0, -6000.0);
 				Vec3 cy_wheel_friction_pos(0.0, 0.0, 0.0);
