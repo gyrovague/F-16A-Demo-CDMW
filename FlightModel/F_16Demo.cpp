@@ -1098,7 +1098,7 @@ void ed_fm_cold_start()
 	*/
 
 	// input does not work correctly yet
-	F16::LandingGear.setGearDown();
+	F16::geardown = TRUE;
 	F16::Airframe.setCanopyClosed();
 	F16::Engine.startEngine();
 	F16::FlightControls.setAirbrakeOFF();
