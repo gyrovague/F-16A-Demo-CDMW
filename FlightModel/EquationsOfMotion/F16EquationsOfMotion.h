@@ -13,9 +13,11 @@
 
 namespace F16
 {
-	//int brake3;
-	//bool CATI3;
-	//bool Cstate3;
+
+	bool TVCstateEOM;
+	double PedalEOM;
+	double PedalEOM2 = 0;
+	bool  WOWEOM;
 
 
 	class F16Motion
@@ -148,6 +150,23 @@ namespace F16
 			return Cstate3;
 		}
 		*/
+		bool getTVC(bool ccccccc)
+		{
+			TVCstateEOM = ccccccc;
+			return TVCstateEOM;
+		}
+		double getPedal(double dddddddd)
+		{
+			PedalEOM = dddddddd;
+			if (WOWEOM == TRUE) PedalEOM2 = abs(PedalEOM) * 1.5;
+			else if (TVCstateEOM == TRUE) PedalEOM2 = abs(PedalEOM) * 3.0;
+			return PedalEOM;
+		}
+		bool getWOW(bool wow)
+		{
+			WOWEOM = wow;
+			return WOWEOM;
+		}
 
 		//====================================================================================================
 
@@ -305,7 +324,7 @@ namespace F16
 		// TODO: nose-wheel steering angle, braking forces
 		void updateWheelForces(double leftWheelXFriction, double leftWheelYFriction, double rightWheelXFriction, double rightWheelYFriction, double noseWheelXFriction, double noseWheelYFriction)
 		{
-			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)
+			if ((PedalEOM > 0 && WOWEOM == TRUE) || (PedalEOM > 0 && TVCstateEOM == TRUE))
 			{
 
 				// TODO: offset pos of each wheel,
@@ -316,18 +335,18 @@ namespace F16
 				// TODO: debug: check force direction!
 				// check reduction in kinetic energy per wheel
 				// and check that we don't underflow..
-				add_local_force_cg(Vec3(-2000.0, 0.0,0.0) /*, Vec3(2000,0,0)*/);
-				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0,0,6000)*/);
+				add_local_force_cg(Vec3(-2000.0 * PedalEOM2, 0.0, 0.0) /*, Vec3(2000,0,0)*/);
+				add_local_force_cg(Vec3(0.0, 0.0, 6000.0 * PedalEOM2) /*, Vec3(0,0,6000)*/);
 				add_local_force_cg(Vec3(0.0, 0.0,0.0) /*, Vec3(2000,0.0,0.0)*/);
-				add_local_force_cg(Vec3(0.0, 0.0, 6000.0) /*, Vec3(0.0,0.0,6000)*/);
+				add_local_force_cg(Vec3(0.0, 0.0, 6000.0 * PedalEOM2) /*, Vec3(0.0,0.0,6000)*/);
 			}
-			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
+			if ((PedalEOM < 0 && WOWEOM == TRUE) || (PedalEOM < 0 && TVCstateEOM == TRUE))
 			{
 
-				add_local_force_cg(Vec3(-9000.0, 0.0, 0.0));//add_local_force_cg(Vec3(-5000.0, 0.0, 0.0));
-				add_local_force_cg(Vec3(0.0, 0.0, -6000.0));
+				add_local_force_cg(Vec3(-9000.0 * PedalEOM2, 0.0, 0.0));//add_local_force_cg(Vec3(-5000.0, 0.0, 0.0));
+				add_local_force_cg(Vec3(0.0, 0.0, -6000.0 * PedalEOM2));
 				add_local_force_cg(Vec3(0.0, 0.0, 0.0));//add_local_force_cg(Vec3(0.0, 0.0, 0.0));
-				add_local_force_cg(Vec3(0.0, 0.0, -6000.0));
+				add_local_force_cg(Vec3(0.0, 0.0, -6000.0 * PedalEOM2));
 			}
 		}
 
@@ -339,16 +358,16 @@ namespace F16
 		// free-rolling friction
 		void updateRollingFriction(const double CxWheelFriction, const double CyWheelFriction)
 		{
-			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)
+			if ((PedalEOM > 0 && WOWEOM == TRUE) || (PedalEOM > 0 && TVCstateEOM == TRUE))
 			{
 				// TODO: must have support for static friction: engine power needed to overcome and transfer to rolling
 
-				Vec3 cx_wheel_friction_force(-2000.0, 0.0, 0.0);//Vec3 cx_wheel_friction_force(2000.0, 0.0,0.0);
+				Vec3 cx_wheel_friction_force(-2000.0 * PedalEOM2, 0.0, 0.0);//Vec3 cx_wheel_friction_force(2000.0, 0.0,0.0);
 				Vec3 cx_wheel_friction_pos(0.0,0.0,0.0);
 				//add_local_force_cg(cx_wheel_friction_force, cx_wheel_friction_pos);
 
 				// test, skip some things for now
-				sum_vec3(common_force, Vec3(2000.0, 0.0, 0.0));//sum_vec3(common_force, Vec3(2000.0, 0.0,0.0));
+				sum_vec3(common_force, Vec3(2000.0 * PedalEOM2, 0.0, 0.0));//sum_vec3(common_force, Vec3(2000.0, 0.0,0.0));
 				// -> actually need to reduce this from _moment_ not add opposite force?
 
 
@@ -356,22 +375,22 @@ namespace F16
 				// -> if not turning this should be zero since the angle is same as rolling direction
 				// -> skip this if cx vector is aligned with direction of traveling?
 				//
-				Vec3 cy_wheel_friction_force(0.0, 0.0,6000.0);
+				Vec3 cy_wheel_friction_force(0.0, 0.0, 6000.0 * PedalEOM2);
 				Vec3 cy_wheel_friction_pos(0.0,0.0,0.0);
 				add_local_force_cg(cy_wheel_friction_force /*,cy_wheel_friction_pos*/);
 				// test, skip some things for now
 				sum_vec3(common_force, cy_wheel_friction_force);
 			}
-			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
+			if ((PedalEOM < 0 && WOWEOM == TRUE) || (PedalEOM < 0 && TVCstateEOM == TRUE))
 			{
 				
 
-				Vec3 cx_wheel_friction_force(-9000.0, 0.0, 0.0);//Vec3 cx_wheel_friction_force(-5000.0, 0.0, 0.0);
+				Vec3 cx_wheel_friction_force(-9000.0 * PedalEOM2, 0.0, 0.0);//Vec3 cx_wheel_friction_force(-5000.0, 0.0, 0.0);
 				Vec3 cx_wheel_friction_pos(0.0, 0.0, 0.0);
 				
 				sum_vec3(common_force, Vec3(0.0, 0.0, 0.0));//sum_vec3(common_force, Vec3(0.0, 0.0, 0.0));
 				
-				Vec3 cy_wheel_friction_force(0.0, 0.0, -6000.0);
+				Vec3 cy_wheel_friction_force(0.0, 0.0, -6000.0 * PedalEOM2);
 				Vec3 cy_wheel_friction_pos(0.0, 0.0, 0.0);
 				add_local_force_cg(cy_wheel_friction_force);
 				
@@ -382,7 +401,7 @@ namespace F16
 		// handle brake input (differential support)
 		void updateBrakingFriction(const double leftCxWheelFriction, const double rightCxWheelFriction)
 		{
-			if (GetAsyncKeyState(VK_OEM_PERIOD) & 0x8000)
+			if ((PedalEOM > 0 && WOWEOM == TRUE) || (PedalEOM > 0 && TVCstateEOM == TRUE))
 			{
 				// TODO: lua has this definition, check our values in calculations 
 				//wheel_brake_moment_max = 15000.0, -- maximum value of braking moment  , N*m 
@@ -401,8 +420,8 @@ namespace F16
 				}
 				*/
 
-				Vec3 cxr_wheel_friction_force(-6000.0, 0.0,0.0);
-				Vec3 cxl_wheel_friction_force(-6000.0, 0.0,0.0);
+				Vec3 cxr_wheel_friction_force(-6000.0 * PedalEOM2, 0.0, 0.0);
+				Vec3 cxl_wheel_friction_force(-6000.0 * PedalEOM2, 0.0, 0.0);
 
 				// TODO: check wheel offset from cg!
 				// reversed axis? 
@@ -432,12 +451,12 @@ namespace F16
 				add_local_force(cxl_wheel_friction_force, cxl_wheel_friction_pos);
 				
 			}
-			if (GetAsyncKeyState(VK_OEM_COMMA) & 0x8000)
+			if ((PedalEOM < 0 && WOWEOM == TRUE) || (PedalEOM < 0 && TVCstateEOM == TRUE))
 			{
 				
 
-				Vec3 cxr_wheel_friction_force(6000.0, 0.0, 0.0);
-				Vec3 cxl_wheel_friction_force(6000.0, 0.0, 0.0);
+				Vec3 cxr_wheel_friction_force(6000.0 * PedalEOM2, 0.0, 0.0);
+				Vec3 cxl_wheel_friction_force(6000.0 * PedalEOM2, 0.0, 0.0);
 
 				
 				Vec3 cxl_wheel_friction_pos(0.0, 0.0, 5.0); 

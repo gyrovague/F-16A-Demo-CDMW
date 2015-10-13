@@ -158,6 +158,8 @@ namespace F16
 	bool        geardown = FALSE;
 	bool        canopy = TRUE;
 	bool        geardown2 = FALSE;
+	bool        TVCstate;
+	double      PedalforEOM;
 	//bool        CATIII;
 	//bool        CATIII3;
 	//int        brake3333;
@@ -166,6 +168,8 @@ namespace F16
 	bool        canopy22;
 	double      compressL;
 	double      compressR;
+	bool        WOWgeneral;
+	bool        WOWgeneral2;
 
 	F16Atmosphere Atmos;
 	F16Aero Aero;
@@ -312,7 +316,7 @@ void ed_fm_simulate(double dt)
 	// -Angle of attack (deg)
 	// -Pitch rate (rad/sec)
 	// -Differential command (from roll controller, not quite implemented yet)
-	F16::elevator_DEG_commanded   = -(F16::FlightControls.fcs_pitch_controller(F16::FlightControls.longStickInput,-0.3,F16::alpha_DEG,F16::pitchRate_RPS * F16::radiansToDegrees,(F16::accz/9.81),0.0,F16::Atmos.dynamicPressure_LBFT2, frametime));
+	F16::elevator_DEG_commanded   = -(F16::FlightControls.fcs_pitch_controller(F16::FlightControls.longStickInput,-0.3,F16::alpha_DEG,F16::pitchRate_RPS * F16::radiansToDegrees,(F16::accz),0.0,F16::Atmos.dynamicPressure_LBFT2, frametime));
 	// Call the servo dynamics model (not used as it causes high flutter in high speed situations, related to filtering and dt rate)
 	F16::elevator_DEG	= F16::elevator_DEG_commanded; //F16::ACTUATORS::elevator_actuator(F16::elevator_DEG_commanded,dt);
 	F16::elevator_DEG = limit(F16::elevator_DEG,-25.0,25.0);
@@ -426,6 +430,11 @@ void ed_fm_set_surface (double		h,//surface height under the center of aircraft
 
 		F16::compressR = F16::Engine.getCompressE(F16::LandingGear.wheelRight.getStrutCompression());
 
+		if (F16::compressL > 0 || F16::compressR > 0) F16::WOWgeneral = TRUE;
+		else F16::WOWgeneral = FALSE;
+
+		F16::WOWgeneral2 = F16::Motion.getWOW(F16::WOWgeneral);
+
 		//F16::CATIII = F16::Engine.getCATI(F16::FlightControls.getCAT());
 		//F16::CATIII3 = F16::Motion.getCATI3(F16::FlightControls.getCAT());
 		// in ground effect with the surface?
@@ -487,8 +496,9 @@ void ed_fm_set_current_state (double ax,//linear acceleration component in world
 	F16::ay_world = ay;
 	F16::getAccelx = F16::FlightControls.getnumber5(ax);
 	
-	F16::num9 = F16::FlightControls.getnumber9(vy);
 
+	F16::num9 = F16::FlightControls.getnumber9(vy);
+	
 	
 	if (GetAsyncKeyState(0x47) & 1) F16::geardown = !F16::geardown;
 	if (GetAsyncKeyState(0x56) & 1) F16::canopy = !F16::canopy;
@@ -524,15 +534,15 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
 										double omegay,//angular velocity components in body coordinate system (rad/sec)
 										double omegaz,//angular velocity components in body coordinate system (rad/sec)
 										double yaw,  //radians (rad)
-										double pitch,//radians (rad/sec)
-										double roll, //radians (rad/sec)
+										double pitch,//LJQC: Pitch angle, in radians (rad)
+										double roll, //LJQC: Bank angle, in radians (rad)
 										double common_angle_of_attack, //AoA  (rad)
 										double common_angle_of_slide   //AoS  (rad)
 										)
 {
 	F16::Atmos.setAirspeed(vx, vy, vz, wind_vx, wind_vy, wind_vz);
 	F16::getpAccelx = F16::FlightControls.getnumber6(ax);
-	F16::num10 = F16::FlightControls.getnumber10(ay);
+	
 	//F16::num7 = F16::FlightControls.getnumber7(az);
 	F16::quaternionw = F16::FlightControls.getquaternionw(roll);
 	F16::quaternionx = F16::FlightControls.getquaternionx(yaw);
@@ -550,8 +560,12 @@ void ed_fm_set_current_state_body_axis(	double ax,//linear acceleration componen
 	F16::pitchRate_RPS	= omegaz;
 	F16::yawRate_RPS	= -omegay;
 
-	F16::accz = ay;
+	F16::accz = ay / 9.81 - 0.5 * sin(pitch) + cos(roll) - 1.0;//LJQC: Temporary hack for normal accerlartion
+	F16::num10 = F16::FlightControls.getnumber10(F16::accz);
+
 	F16::accy = az;
+	F16::TVCstate = F16::Motion.getTVC(F16::FlightControls.outputTVCstate());//LJQC: Get TVC state for EOM
+	F16::PedalforEOM = F16::Motion.getPedal(F16::FlightControls.pedInputRaw);//LJQC: Get pedal input for EOM
 }
 
 // list of input enums kept in separate header for easier documenting..

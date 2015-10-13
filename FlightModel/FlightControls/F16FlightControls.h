@@ -529,12 +529,12 @@ int Render()
 
 
 		//LJQC: Values for debug only===================================================================================
-		/*
-		RECT g_PITCHtrimsvaluePosition = { 0, 0, 25 + 850, 800 };
-		std::ostringstream s19(displayC);
-		s19 << displayC;
-		pFont->DrawTextA(NULL, s19.str().c_str(), -1, &g_PITCHtrimsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
 		
+		RECT g_PITCHtrimsvaluePosition = { 0, 0, 25 + 850, 800 };
+		std::ostringstream s19(num10);
+		s19 << num10;
+		pFont->DrawTextA(NULL, s19.str().c_str(), -1, &g_PITCHtrimsvaluePosition, DT_CENTER | DT_VCENTER, D3DCOLOR_XRGB(132, 251, 169));
+		/*
 		RECT g_PITCHoutputsvaluePosition = { 0, 0, 25 + 850, 840 };
 		std::ostringstream s20(displayY);
 		s20 << displayY;
@@ -1550,7 +1550,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lPara
 
 DWORD WINAPI InputThread(LPVOID lpParam)
 {
-	    Sleep(20*1000);
+	    Sleep(8000);
 
 		wchar_t *pString = reinterpret_cast<wchar_t *> (lpParam);
 		RegisterDLLWindowClass(L"A");
@@ -2054,7 +2054,17 @@ namespace F16
 			dele = de;
 			return dele;
 		}
-
+		bool outputTVCstate() const
+		{
+			if (TVC == FALSE)
+			{
+				return FALSE;
+			}
+			else if (TVC == TRUE)
+			{
+				return TRUE;
+			}
+		}
 		// Stick force schedule for pitch control
 		double fcs_pitch_controller_force_command(double longStickInput, double pitchTrim, double dt)
 		{
