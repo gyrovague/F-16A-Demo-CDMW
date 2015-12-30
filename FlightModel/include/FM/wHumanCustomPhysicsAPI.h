@@ -271,7 +271,7 @@ typedef double (*PFN_GET_SHAKE_AMPLITUDE) ();
 will be called for your internal configuration
 ed_fm_configure
 */
-typedef double (*PFN_CONFIGURE)  (const char * cfg_path);
+typedef void (*PFN_CONFIGURE)  (const char * cfg_path);
 /*
 will be called for your internal configuration
 void ed_fm_release   called when fm not needed anymore : aircraft death etc.

@@ -16,7 +16,7 @@
 
 bool        ladder = TRUE;
 int         dele;//LJQC: Speed Brake Display
-int        HMCS = 0;//LJQC: Turn ON/OFF HMCS
+int        HMCS = 1;//LJQC: Turn ON/OFF HMCS
 bool        CATI = TRUE;//LJQC: CAT I/III Swtich
 int         a = 0; //LJQC: display KTAS on HMCS
 int         IAS; //LJQC: display KIAS on HMCS
@@ -1588,7 +1588,7 @@ DWORD WINAPI InputThread(LPVOID lpParam)
 
 			if (GetAsyncKeyState(0x54) & 1) TVC = !TVC;
 
-			if ((GetAsyncKeyState(0x4D) & 1) && (GetAsyncKeyState(VK_SHIFT) & 0x8000)) HMCS += 1;
+			if ((GetAsyncKeyState(0x4D) & 1) ) HMCS += 1;
 			if (HMCS > 3) HMCS = 0;
 
 			if (HMCS == 0 || HMCS == 1)
